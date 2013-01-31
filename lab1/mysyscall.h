@@ -16,12 +16,27 @@
 //
 // #define MY_GETPID(...) MY_SYSCALL...(...)
 
-#define MY_SYSCALL0(NUM)				\
+//EAX = 1 for exit
+//EBX = NUM for exit code (probably 0)
+#define sys_exit(NUM)				\
    ({							\
     int rv = -ENOSYS;					\
     asm volatile ("nop" : : :);				\
     rv;							\
   })
+
+//eax 4 write
+//ebx 1 for STDOUT fd
+//ecx is string
+//edx for size of string
+//
+#define sys_write()					\
+  ({							\
+	int rv = -ENOSYS; 				\
+	asm volatile("nop" : : :); 			\
+	rv;						\ 
+  })
+
 
 #define MY_SYSCALL1(NUM, ARG1)				\
   ({							\

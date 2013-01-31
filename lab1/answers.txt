@@ -1,2 +1,14 @@
-Place the answers to required questions in this text file.
+Author: Kevin Hock
 
+Answer for question 1:
+	It is comparing the return value of ? to see whether or not the syscall is bad (a negative number).
+Answer for question 2:
+	It depends on the syscall but..
+	EAX for the syscall number 
+	EBX for the file descriptor 
+	ECX for a buffer like "hello"
+	EDX for a string length
+	ESI for 
+	EDI for 	
+
+                                                                                                                                     D 

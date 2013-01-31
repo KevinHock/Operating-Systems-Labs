@@ -24,7 +24,7 @@ main(int argc, char **argv) {
 
   // Exit.  Until this is implemented,
   // your program will hang or give a segmentation fault.
-  MY_SYSCALL1(0, return_code);
+  sys_exit(0, return_code);
 
   return return_code;
 }
