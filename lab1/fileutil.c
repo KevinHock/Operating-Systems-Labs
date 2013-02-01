@@ -26,7 +26,8 @@ int main(int argc, char **argv) {
 
   // Exit.  Until this is implemented,
   // your program will hang or give a segmentation fault.
-  sys_exit();
+  int p=0;
+  sys_exit(p);
   //char[] p = "WhyWon'tItWork";
   //char* qq=p;
   //sys_write(qq);
