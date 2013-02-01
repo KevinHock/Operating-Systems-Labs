@@ -31,6 +31,6 @@ int main(int argc, char **argv) {
   //char* qq=p;
   //sys_write(qq);
   
-  printf("After my syscall");
+  printf("After my syscall\n");
   return 0;
 }
