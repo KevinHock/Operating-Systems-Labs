@@ -1,4 +1,6 @@
 #include "mysyscall.h"
+#include <stdlib.h>
+#include <stdio.h>
 
 void util_start(void);
 
@@ -16,15 +18,19 @@ asm ("util_start:\r\n"
      "pushl (%eax)\r\n"
      "  call main\r\n");
 
-int
-main(int argc, char **argv) {
-  int return_code = argc;
+int main(int argc, char **argv) {
+  //int return_code = argc;
 
   // Exercise 6: Your code here.
+  printf("Hello\n");
 
   // Exit.  Until this is implemented,
   // your program will hang or give a segmentation fault.
-  sys_exit(0, return_code);
-
-  return return_code;
+  sys_exit();
+  //char[] p = "WhyWon'tItWork";
+  //char* qq=p;
+  //sys_write(qq);
+  
+  printf("After my syscall");
+  return 0;
 }

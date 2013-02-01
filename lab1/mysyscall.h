@@ -18,22 +18,27 @@
 
 //EAX = 1 for exit
 //EBX = NUM for exit code (probably 0)
-#define sys_exit(NUM)				\
-   ({							\
-    int rv = -ENOSYS;					\
-    asm volatile ("nop" : : :);				\
-    rv;							\
-  })
+
+//push eax
+//mov eax, 1
+//mov ebx, num
+//int x80
+//pop eax
+#define sys_exit() asm("pushl %%eax" "\n\t" "pushl %%ebx" "\n\t" "movl $1, %%eax" "\n\t" "movl $0, %%ebx" "\n\t" "int $0x80" "\n\t" "popl %%ebx" "\n\t" "popl %%eax" "\n\t":::);
 
 //eax 4 write
 //ebx 1 for STDOUT fd
 //ecx is string
 //edx for size of string
 //
-#define sys_write()					\
-  ({							\
+/*
+#define sys_write(arg1)	({							\
 	int rv = -ENOSYS; 				\
-	asm volatile("nop" : : :); 			\
+	asm volatile("movl $4, eax\n\t":::); 		\
+	asm volatile("movl $1, ebx\n\t":::);		\
+	asm volatile("movl %0, ecx\n\t"::"0" (arg1):); \
+	asm volatile("movl $4, edx\n\t":::);		\
+	asm volatile("int x80\n\t");			\
 	rv;						\ 
   })
 
@@ -81,5 +86,5 @@
      asm volatile ("nop" : : :);			     \
      rv;						     \
    })
-
+*/
 #endif // __MYSYSCALL_H__
