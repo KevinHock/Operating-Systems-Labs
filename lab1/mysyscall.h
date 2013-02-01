@@ -25,10 +25,15 @@
 //int x80
 //pop eax
 
-#define sys_exit(arg1) asm("pushl %%eax\n\t" "pushl %%ebx\n\t" "movl $1, %%eax\n\t" "movl %0, %%ebx\n\t" "int $0x80\n\t" "popl %%ebx\n\t" "popl %%eax\n\t":"=r"(arg1):"0" (arg1));
+#define sys_exit(arg1) asm("pushl %%eax\n\t" "pushl %%ebx\n\t" "movl $1, %%eax\n\t" "movl %0, %%ebx\n\t" "int $0x80\n\t" "popl %%ebx\n\t" "popl %%eax\n\t":"=r" (arg1):"0" (arg1));
+
+#define sys_getpid(arg1) asm("pushl %%eax\n\t" "movl $20, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"0" (arg1));
 /*
 #define sys_exit(status) asm("pushl %%eax\n\t" "pushl %%ebx\n\t" "movl $1, %%eax\n\t" "movl %0, %%ebx\n\t" "int $0x80\n\t" "popl %%ebx\n\t" "popl %%eax\n\t"::"0" (status):);
 */
+
+
+
 
 //eax 4 write
 //ebx 1 for STDOUT fd

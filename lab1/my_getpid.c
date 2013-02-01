@@ -8,7 +8,7 @@ int main() {
   pid1 = pid2 = 0;
 
   pid1 = getpid();
-  
+  sys_getpid(pid2);
   // Exercise 5: Your code here.
   // Use the appropriate MY_SYSCALL#() macro.
   //
