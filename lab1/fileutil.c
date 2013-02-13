@@ -73,15 +73,22 @@ int main(int argc, char **argv) {
   
 
   printf("fd is %d\n",g);
-
-//malloc                15 is preset
+  
+//malloc from file
   char* buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
   //if(buffer == MAP_FAILED)
   	//print bad map
-
+//Close File
+  twoArg(6,g);
+   
+  
+  
+  
+  
+  
   char currChar=*(buffer); 
   printf("\nChar = %c\n",currChar);
-
+  
 //-c flag   
   int newLineCount=0,offset=0;
   if(cFlag==1 || rFlag==1)
@@ -95,16 +102,83 @@ int main(int argc, char **argv) {
   if(cFlag==1)printf("The number of newlines = %d\n",newLineCount);
   printf("\ncFlag=%d\n",cFlag);
   
+//Open File
+  sys_write(5,"cba.txt",0,0,g);
+  
+  offset=0;
+  if(dFlag && !rFlag)
+  	while(1){
+            currChar=*(buffer+offset++);
+            if((currChar==EOF || currChar == 0 || currChar ==-1))
+                break;
+            if(10==(int)currChar)
+                fputc(13,sampleFile);
+            fputc(currChar,sampleFile);
+            printf("I just put %x in the file\n",currChar);
+        }
+//We already checked that d and u aren't both set so no offset=0;
+  if(uFlag && !rFlag)
+        while(1){
+            currChar=*(buffer+offset++);
+            if((currChar==EOF || currChar == 0 || currChar ==-1))
+                break;
+            if(13!=(int)currChar)
+                fputc(currChar,sampleFile);
+            printf("I just put %x in the file\n",currChar);
+        }
+  //At most number of newlines + 1 + sizeof buffer
+  
+/*
+  FILE *sampleFile;
+    sampleFile=fopen("4.txt","w");
+    if(!sampleFile){
+        puts("Error with 4.txt");
+        return(1);
+    }
+    //-d
+    
+    offset=0;
+    if(dFlag && !rFlag)//prints garbage at the end so I put printf("I just put %x in the file\n",currChar); // hex fiend to make sure and found out it was putting null bytes and -1
+        while(1){
+            currChar=*(buffer+offset++);
+            if((currChar==EOF || currChar == 0 || currChar ==-1))// && f!=0)
+                break;
+            if(10==(int)currChar)
+                fputc(13,sampleFile);
+            fputc(currChar,sampleFile);
+            printf("I just put %x in the file\n",currChar);
+        }
+    
+    if(uFlag && !rFlag)
+        while(1){
+            currChar=*(buffer+offset++);
+            if((currChar==EOF || currChar == 0 || currChar ==-1))
+                break;
+            if(13!=(int)currChar)
+                fputc(currChar,sampleFile);
+            printf("I just put %x in the file\n",currChar);
+        }
+*/
+  
   
   //munmap(&buffer, fileSize);
-//Close File
-  twoArg(6,g);
-   
+
 //Exit
   int status=0;
   sys_exit(status);
   return(0);
 }
+
+
+
+
+
+
+
+
+
+
+
 
 void letterFlagSetter(char* string){
   int flagLoop=1;
