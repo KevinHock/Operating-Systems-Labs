@@ -103,62 +103,43 @@ int main(int argc, char **argv) {
   printf("\ncFlag=%d\n",cFlag);
   
 //Open File
-  sys_write(5,"cba.txt",0,0,g);
-  
+  sys_write(5,"cba.txt",1002,0,g);
+ 
+/*
+int la;
+sys_write(4,1,helpMsg,length(helpMsg),la);
+*/
+
+  char* cr = "\r";
   offset=0;
+  int amount=0;
   if(dFlag && !rFlag)
   	while(1){
-            currChar=*(buffer+offset++);
+            currChar=*(buffer+offset);
             if((currChar==EOF || currChar == 0 || currChar ==-1))
                 break;
-            if(10==(int)currChar)
-                fputc(13,sampleFile);
-            fputc(currChar,sampleFile);
+            if(10==(int)currChar)//write
+		sys_write(4,g,cr,1,amount);
+	    if(amount!=1)
+		//throw exception
+	    sys_write(4,g,(buffer+offset),1,amount);
             printf("I just put %x in the file\n",currChar);
+	    offset++;
         }
 //We already checked that d and u aren't both set so no offset=0;
   if(uFlag && !rFlag)
         while(1){
-            currChar=*(buffer+offset++);
+            currChar=*(buffer+offset);
             if((currChar==EOF || currChar == 0 || currChar ==-1))
                 break;
             if(13!=(int)currChar)
-                fputc(currChar,sampleFile);
+                sys_write(4,g,(buffer+offset),1,amount);
             printf("I just put %x in the file\n",currChar);
+	    offset++;
         }
   //At most number of newlines + 1 + sizeof buffer
-  
-/*
-  FILE *sampleFile;
-    sampleFile=fopen("4.txt","w");
-    if(!sampleFile){
-        puts("Error with 4.txt");
-        return(1);
-    }
-    //-d
-    
-    offset=0;
-    if(dFlag && !rFlag)//prints garbage at the end so I put printf("I just put %x in the file\n",currChar); // hex fiend to make sure and found out it was putting null bytes and -1
-        while(1){
-            currChar=*(buffer+offset++);
-            if((currChar==EOF || currChar == 0 || currChar ==-1))// && f!=0)
-                break;
-            if(10==(int)currChar)
-                fputc(13,sampleFile);
-            fputc(currChar,sampleFile);
-            printf("I just put %x in the file\n",currChar);
-        }
-    
-    if(uFlag && !rFlag)
-        while(1){
-            currChar=*(buffer+offset++);
-            if((currChar==EOF || currChar == 0 || currChar ==-1))
-                break;
-            if(13!=(int)currChar)
-                fputc(currChar,sampleFile);
-            printf("I just put %x in the file\n",currChar);
-        }
-*/
+ twoArg(6,g); 
+
   
   
   //munmap(&buffer, fileSize);
