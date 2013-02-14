@@ -214,12 +214,11 @@ if(stdinFlag==0){
 //Open File
 if(stdoutFlag==0){
     sys_writeFile(*(argv+argc-1), 100|1, 777,g);
+    g=howMuchRed;
   //sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
 }else{
 g=1;}
 
-printf("\n\ng is %d\n\n",g);
-g=57; 
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
