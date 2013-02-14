@@ -136,6 +136,7 @@ char bufferA[10000];
 char* buffer;
 int howMuchRed=0;
 int* ludo=&howMuchRed;
+int flagMakegRed=0;
 //ghi
 if(stdinFlag==0){
 	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
@@ -146,6 +147,7 @@ if(stdinFlag==0){
         sys_read(*(ludo),buffer,9998);
 	//printf("\n\nbuffer  = %s\n\n",buffer);
 	printf("\nHow much red after =%d\n",howMuchRed);
+	flagMakegRed=1;
 }
   	//print bad map
 //Close File
@@ -209,16 +211,17 @@ if(stdinFlag==0){
 
 
 
-  //printf("\nFilename =%x\n",*(*(argv+argc-1)+7)); 
-  g=0;
+  printf("\ng =%d\n",g); 
+  //g=0;
 //Open File
 if(stdoutFlag==0){
     sys_writeFile(*(argv+argc-1), 100|1, 777,g);
-    g=howMuchRed;
+    if(flagMakegRed){
+    	g=howMuchRed;}
   //sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
 }else{
 g=1;}
-
+printf("\ng =%d\n",g);
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
