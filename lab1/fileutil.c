@@ -144,27 +144,27 @@ if(stdinFlag==0){
 	buffer = &bufferA;
 	//printf("\nHow much red before =%d\n",howMuchRed);
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
+<<<<<<< HEAD
         sys_read(*(ludo),buffer,9998);
 	//printf("\n\nbuffer  = %s\n\n",buffer);
 	printf("\nHow much red after =%d\n",howMuchRed);
 	flagMakegRed=1;
+=======
+        sys_read(3,howMuchRed,buffer,9998);
+	//printf("\n\nbuffer second char = %c\n\n",*(buffer+1));
+>>>>>>> parent of d505d13... g=-13
 }
   	//print bad map
 //Close File
-if(stdinFlag==0){
-  twoArg(6,g);}
-  /*
-  char* la = "ladedars.\n";
-  int fl;
-  sys_write(4,1,la,length(la),fl);*/
-  //int status=1;
-  //sys_exit(status);
+  twoArg(6,g);
+  
+  
   
   
   
   
   char currChar=*(buffer); 
-  //printf("\nChar = %c\n",currChar);
+  printf("\nChar = %c\n",currChar);
   
 //-c flag   
   int newLineCount=0,offset=0;
@@ -200,6 +200,7 @@ if(stdinFlag==0){
 	sys_write(4,2,beirErr,1,resultsOfWritingNumber);
 }
 
+<<<<<<< HEAD
 
 
 
@@ -222,6 +223,18 @@ if(stdoutFlag==0){
 }else{
 g=1;}
 printf("\ng =%d\n",g);
+=======
+  printf("\ncFlag=%d\n",cFlag);
+  
+//Open File
+if(stdout==0){
+  sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
+}else{
+g=1;}
+
+printf("\n\ng is %d\n\n",g);
+ 
+>>>>>>> parent of d505d13... g=-13
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
