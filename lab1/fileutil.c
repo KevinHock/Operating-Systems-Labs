@@ -142,19 +142,25 @@ if(stdinFlag==0){
 	buffer = &bufferA;
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
         sys_read(3,howMuchRed,buffer,9998);
-	//printf("\n\nbuffer second char = %c\n\n",*(buffer+1));
+	//printf("\n\nbuffer  = %s\n\n",buffer);
+	
 }
   	//print bad map
 //Close File
-  twoArg(6,g);
-  
-  
+if(stdinFlag==0){
+  twoArg(6,g);}
+  /*
+  char* la = "ladedars.\n";
+  int fl;
+  sys_write(4,1,la,length(la),fl);*/
+  //int status=1;
+  //sys_exit(status);
   
   
   
   
   char currChar=*(buffer); 
-  printf("\nChar = %c\n",currChar);
+  //printf("\nChar = %c\n",currChar);
   
 //-c flag   
   int newLineCount=0,offset=0;
@@ -190,16 +196,28 @@ if(stdinFlag==0){
 	sys_write(4,2,beirErr,1,resultsOfWritingNumber);
 }
 
-  printf("\ncFlag=%d\n",cFlag);
-  
+
+
+
+
+
+
+
+
+
+
+
+  //printf("\nFilename =%x\n",*(*(argv+argc-1)+7)); 
+  g=0;
 //Open File
-if(stdout==0){
-  sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
+if(stdoutFlag==0){
+    sys_write(5,"zzz.txt", 100|1, 777,g);
+  //sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
 }else{
 g=1;}
 
 printf("\n\ng is %d\n\n",g);
- 
+g=57; 
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);

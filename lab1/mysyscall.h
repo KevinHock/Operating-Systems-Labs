@@ -31,8 +31,8 @@
 
 
 //#define brk(arg1, arg2, arg3) asm("int $0x80\n\t" :"=r" (arg3):"a" (arg1), "b" (arg2));
-
-#define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t" "movl %%eax, %4":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
+#define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
+//#define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t" "movl %%eax, %4":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
 #define twoArg(arg1, arg2) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2));
 #define statistics(arg1, arg2, arg3) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2), "c" (arg3));
 #define sys_read(arg1, arg2, arg3,arg4) asm("int $0x80\n\t":"=r" (arg2):"a" (arg1), "b" (arg2), "c" (arg3), "d" (arg4));	
