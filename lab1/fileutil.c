@@ -22,11 +22,47 @@ asm ("util_start:\r\n"
      "  call main\r\n");
 
 int dFlag=0,cFlag=0,hFlag=0,rFlag=0,uFlag=0,stdoutFlag=0,stdinFlag=0;
+char ttcarr[20];
+char* ttcRet;
 
 int length(char* string);
 void stdinFlagSetter(char* string);
 void stdoutFlagSetter(char* string);
 void letterFlagSetter(char* string);
+char* turnToChar(int number);
+
+
+char* turnToChar(int number){
+  long int ttci;
+  int ttclength=1;
+  for(ttci=1;ttci<1000000;ttci*=10){
+	if(   (number-(ttci*10))    <0){
+		break;}
+	ttclength++;
+  }
+  ttcarr[ttclength]=0;
+  //for(;ttcLength)
+  //if length is 3
+  //0 1 2
+  //965
+  //mod 10 -> 5 ---> ttcLength-1
+  //number=number/10;
+  //...tccLength-2
+  int ttcindexfl=1;
+  int ttcleftover=-1;
+  printf("\n\nHello\n\n");
+  while(ttclength-ttcindexfl>=0){
+	ttcleftover=number%10;
+	ttcleftover+=48;
+	printf("\n\nLadeda %c Ladeda\n\n",(char)ttcleftover);
+	ttcarr[ttclength-ttcindexfl]=(char)ttcleftover;
+	number/=10;
+        ttcindexfl++;
+  }
+  ttcRet = &ttcarr;
+  return ttcRet;
+}
+
 
 
 int main(int argc, char **argv) {
@@ -54,37 +90,60 @@ int main(int argc, char **argv) {
         int la;
 	sys_write(4,1,helpMsg,length(helpMsg),la);
 	dFlag=uFlag=rFlag=cFlag=0;
+	int status=0;
+  	sys_exit(status);
   }
   
   
 //
-  char *name = "abc.txt";
+  //char *name = "abc.txt";
   struct stat stbuf;
   struct stat *pointy=&stbuf;
+  short fileSize=0;
 //stat(name, &stbuf);
-  statistics(195,name, pointy);
-  short fileSize = stbuf.st_size;
-  printf("\nThe size is %d\n",fileSize);
- 
+  if(stdinFlag==0){//outFlag==0){
+  	statistics(195,*(argv+argc-2), pointy);
+  	fileSize = stbuf.st_size;
+  	printf("\nThe size of the file is %d\n",fileSize);
+  }
   
 
   int g=20;
   int* f=&g;
 //Open File
-  sys_write(5,"abc.txt",0,0,g);
-  
+  //printf("\nstdoutFlag=%d\nstdinFlag=%d\n",stdoutFlag,stdinFlag);
 
+
+  if(stdinFlag==0){//outFlag==0){
+  	sys_write(5,*(argv+argc-2),0,0,g);//sys_write(5,*(argv+argc-1),0,0,g);
+	if(g<0){
+	     char* helpMsgOpenF = "Unable to open input file.\n";
+             int flying;
+	     sys_write(4,1,helpMsgOpenF,length(helpMsgOpenF),flying);
+	     int status=1;
+  	     sys_exit(status);
+	}
+	printf("\nThe g = %d\n",g);
+	
+}else{
+  	g=1;}
   printf("fd is %d\n",g);
  
+
 //malloc from file
 //if stdin != 1
 char bufferA[10000];
 char* buffer;
-
+int howMuchRed=0;
 //ghi
-//if(stdinFlag==0)
-buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
-  //if(buffer == MAP_FAILED)
+if(stdinFlag==0){
+	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
+}else{
+	buffer = &bufferA;
+	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
+        sys_read(3,howMuchRed,buffer,9998);
+	//printf("\n\nbuffer second char = %c\n\n",*(buffer+1));
+}
   	//print bad map
 //Close File
   twoArg(6,g);
@@ -108,11 +167,38 @@ buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);
             if(currChar==EOF || currChar==0 || currChar ==-1)
                 break;
         }
-  if(cFlag==1)printf("The number of newlines = %d\n",newLineCount);
+  if(cFlag==1){//ghi
+	char* nlMsg = "The number of newlines =";// %d\n"";
+	int resultsOfWritingNumber;
+	sys_write(4,2,nlMsg,length(nlMsg),resultsOfWritingNumber);
+	
+//divide
+	/*char nonl = (char)newLineCount;
+	char* tryErr = &nonl;
+	sys_write(4,2,tryErr,1,resultsOfWritingNumber);
+*/
+	char* numberToPrint = turnToChar(newLineCount);
+	//printf("\nThe string is numberToPrint= %s\n",numberToPrint);
+	//printf("\nThe actual number of newlines is = %d\n",newLineCount);
+	sys_write(4,2,numberToPrint,length(numberToPrint),resultsOfWritingNumber);
+	//if length(numberToPrint)!=resultsOfWritingNumber
+	
+	//takes int -> returns array with null byte at end
+	//mod number by ten and place char equivalent in array then divide it by 10 and do it again
+	char beir = '\n';
+	char* beirErr = &beir;
+	sys_write(4,2,beirErr,1,resultsOfWritingNumber);
+}
+
   printf("\ncFlag=%d\n",cFlag);
   
 //Open File
-  sys_write(5,"cba.txt",100|1,777,g);//ghi
+if(stdout==0){
+  sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
+}else{
+g=1;}
+
+printf("\n\ng is %d\n\n",g);
  
 /*
 int la;
@@ -131,10 +217,10 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
                 break;
             if(10==(int)currChar)//write
 		sys_write(4,g,cr,1,amount);
-	    if(amount!=1)
+	    if(amount!=1){}
 		//throw exception
 	    sys_write(4,g,(buffer+offset),1,amount);
-            printf("I just put %x in the file\n",currChar);
+            //printf("I just put %x in the file\n",currChar);
 	    offset++;
         }
 //We already checked that d and u aren't both set so no offset=0;
@@ -145,7 +231,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
                 break;
             if(13!=(int)currChar)
                 sys_write(4,g,(buffer+offset),1,amount);
-            printf("I just put %x in the file\n",currChar);
+            //printf("I just put %x in the file\n",currChar);
 	    offset++;
         }
   //At most number of newlines + 1 + sizeof buffer
@@ -159,7 +245,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 	
 	//mmap(0, (newLineCount * sizeof(int *)));//malloc(newLineCount * sizeof(int *));//m 
 //	unsigned long specialk = (newLineCount*sizeof(int *));     
-//	int **newLineArray;
+//	int **newLineArray;//malloc fuckin impossible
 //	brk(261, specialk, specialk);	
 	int* array[10000];
         int** newLineArray = &array;
@@ -236,12 +322,12 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   //munmap(&buffer, fileSize);
   twoArg(6,g); 
 //Exit
+
+
   int status=0;
   sys_exit(status);
   return(0);
 }
-
-
 
 
 

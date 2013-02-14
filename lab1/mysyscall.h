@@ -30,12 +30,13 @@
 #define sys_getpid(arg1) asm("pushl %%eax\n\t" "movl $20, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"0" (arg1));
 
 
-#define brk(arg1, arg2, arg3) asm("int $0x80\n\t" :"=r" (arg3):"a" (arg1), "b" (arg2));
+//#define brk(arg1, arg2, arg3) asm("int $0x80\n\t" :"=r" (arg3):"a" (arg1), "b" (arg2));
 
 #define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t" "movl %%eax, %4":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
 #define twoArg(arg1, arg2) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2));
 #define statistics(arg1, arg2, arg3) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2), "c" (arg3));
-					 
+#define sys_read(arg1, arg2, arg3,arg4) asm("int $0x80\n\t":"=r" (arg2):"a" (arg1), "b" (arg2), "c" (arg3), "d" (arg4));	
+ //       sys_read			 
 /*
 #define sys_exit(status) asm("pushl %%eax\n\t" "pushl %%ebx\n\t" "movl $1, %%eax\n\t" "movl %0, %%ebx\n\t" "int $0x80\n\t" "popl %%ebx\n\t" "popl %%eax\n\t"::"0" (status):);
 */
