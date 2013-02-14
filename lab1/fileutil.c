@@ -94,9 +94,10 @@ int main(int argc, char **argv) {
   if(cFlag==1 || rFlag==1)
 	for(;;){
             currChar=*(buffer+offset++);
+	    printf("currChar = %x\n", currChar);
             if(10==(int)currChar)
                 newLineCount++;
-            if(currChar==EOF)
+            if(currChar==EOF || currChar==0 || currChar ==-1)
                 break;
         }
   if(cFlag==1)printf("The number of newlines = %d\n",newLineCount);
@@ -111,6 +112,8 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 */
 
   char* cr = "\r";
+  char* lf = "\n";
+  char* crlf = "\r\n";
   offset=0;
   int amount=0;
   if(dFlag && !rFlag)
@@ -138,12 +141,81 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 	    offset++;
         }
   //At most number of newlines + 1 + sizeof buffer
- twoArg(6,g); 
-
   
+
+  if(rFlag){
+        //Get the offset of each newline
+        offset=0;
+        int nlaIndex=0;//ghi
+        int **newLineArray = malloc(newLineCount * sizeof(int *));
+        //
+        *(newLineArray+nlaIndex)=0;
+        int ttt=1;
+        //Get offsets
+        for(;;){
+            currChar=*(buffer+offset++);
+            printf("currChar = %x\n", currChar);
+            if(currChar==EOF || currChar == 0 || currChar ==-1)
+                break;
+            if(10==(int)currChar)
+                nlaIndex++;
+            else
+                *(newLineArray+nlaIndex)=ttt;
+            ttt++;
+            printf("Count is %d\n",*(newLineArray+nlaIndex));
+        }
+        
+        int p;
+        for(p=newLineCount-1;p>=0;p--){
+            printf("The number to add to buffer is %d \n",(int)(*(newLineArray+p)));
+            printf("Offset %d should be %x\n",p,*(buffer+(int)(*(newLineArray+p))));
+        }
+	
+        //We have the offsets
+        int dosFlag=0;
+	offset=0;
+        //Assuming CR won't be in a UNIX text file.
+        if(!uFlag && !dFlag){
+            for(;;){
+                currChar=*(buffer+offset++);
+                if(currChar==13)
+                    dosFlag=1;
+                if(currChar==EOF || currChar == 0 || currChar ==-1 || currChar == 10)
+                    break;
+            }
+        }
+        else
+            dosFlag=dFlag;
+	printf("\ndosFlag=%d\n",dosFlag);        
+	offset=0;
+        int writeIt;//ghi fix writeIt
+        int cobain=0;
+        for(writeIt=newLineCount-1;writeIt>=-1;writeIt--){
+            if(writeIt!=-1)
+                cobain=(int)(*(newLineArray+writeIt))+1;
+            else
+                cobain=0;
+            //
+            offset=0;
+            //
+            for(;;){
+            	currChar=*(buffer+cobain+offset);
+            	if( currChar == 10 || currChar == EOF || currChar == 0 || currChar == -1  ){
+                	if( dosFlag && writeIt!=(newLineCount-1) ){
+                    		sys_write(4,g,crlf,1,amount);
+                	}
+                	if(!dosFlag && writeIt != (newLineCount-1) )
+                    		sys_write(4,g,lf,1,amount);
+                	break;
+                }
+            	sys_write(4,g,(buffer+cobain+offset++),1,amount);
+            }
+        }
+        
+    }    
   
   //munmap(&buffer, fileSize);
-
+  twoArg(6,g); 
 //Exit
   int status=0;
   sys_exit(status);
