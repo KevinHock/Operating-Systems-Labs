@@ -1,4 +1,5 @@
 #include "mysyscall.h"
+
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <stdlib.h>
@@ -77,8 +78,12 @@ int main(int argc, char **argv) {
  
 //malloc from file
 //if stdin != 1
+char bufferA[10000];
+char* buffer;
+
 //ghi
-  char* buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
+//if(stdinFlag==0)
+buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
   //if(buffer == MAP_FAILED)
   	//print bad map
 //Close File
@@ -107,7 +112,7 @@ int main(int argc, char **argv) {
   printf("\ncFlag=%d\n",cFlag);
   
 //Open File
-  sys_write(5,"cba.txt",1002,0,g);
+  sys_write(5,"cba.txt",100|1,777,g);//ghi
  
 /*
 int la;
@@ -150,9 +155,20 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         //Get the offset of each newline
         offset=0;
         int nlaIndex=0;//ghi
-        int **newLineArray = malloc(newLineCount*sizeof(int *));//mmap(0, (newLineCount * sizeof(int *)));//malloc(newLineCount * sizeof(int *));//m 
-        
+        //int **newLineArray = malloc(newLineCount*sizeof(int *));
+	
+	//mmap(0, (newLineCount * sizeof(int *)));//malloc(newLineCount * sizeof(int *));//m 
+//	unsigned long specialk = (newLineCount*sizeof(int *));     
+//	int **newLineArray;
+//	brk(261, specialk, specialk);	
+	int* array[10000];
+        int** newLineArray = &array;
+
         *(newLineArray+nlaIndex)=0;
+
+
+
+
         int ttt=1;
         //Get offsets
         for(;;){

@@ -30,7 +30,7 @@
 #define sys_getpid(arg1) asm("pushl %%eax\n\t" "movl $20, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"0" (arg1));
 
 
-//#define brk(arg1) asm("int $0x80\n\t":"=r" (arg1):);
+#define brk(arg1, arg2, arg3) asm("int $0x80\n\t" :"=r" (arg3):"a" (arg1), "b" (arg2));
 
 #define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t" "movl %%eax, %4":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
 #define twoArg(arg1, arg2) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2));
