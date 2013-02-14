@@ -52,6 +52,7 @@ int main(int argc, char **argv) {
 	char* helpMsg = "Proper use is fileutil [-cdhru] infile|- outfile|-\n-c: Counts the newlines in the file and outputs to stderr.\n-d: Converts the output to use DOS-style newlines.\n-h: Prints a help message.\n-r: Reverses the contents of the file, on a line-by-line basis.\n-u: Converts the output to use Unix-style newlines.\n";
         int la;
 	sys_write(4,1,helpMsg,length(helpMsg),la);
+	dFlag=uFlag=rFlag=cFlag=0;
   }
   
   
@@ -73,14 +74,16 @@ int main(int argc, char **argv) {
   
 
   printf("fd is %d\n",g);
-  
+ 
 //malloc from file
+//if stdin != 1
+//ghi
   char* buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
   //if(buffer == MAP_FAILED)
   	//print bad map
 //Close File
   twoArg(6,g);
-   
+  
   
   
   
@@ -147,8 +150,8 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         //Get the offset of each newline
         offset=0;
         int nlaIndex=0;//ghi
-        int **newLineArray = malloc(newLineCount * sizeof(int *));
-        //
+        int **newLineArray = malloc(newLineCount*sizeof(int *));//mmap(0, (newLineCount * sizeof(int *)));//malloc(newLineCount * sizeof(int *));//m 
+        
         *(newLineArray+nlaIndex)=0;
         int ttt=1;
         //Get offsets
