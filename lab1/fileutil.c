@@ -135,15 +135,17 @@ int main(int argc, char **argv) {
 char bufferA[10000];
 char* buffer;
 int howMuchRed=0;
+int* ludo=&howMuchRed;
 //ghi
 if(stdinFlag==0){
 	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
 }else{
 	buffer = &bufferA;
+	//printf("\nHow much red before =%d\n",howMuchRed);
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
-        sys_read(3,howMuchRed,buffer,9998);
+        sys_read(*(ludo),buffer,9998);
 	//printf("\n\nbuffer  = %s\n\n",buffer);
-	
+	printf("\nHow much red after =%d\n",howMuchRed);
 }
   	//print bad map
 //Close File
@@ -211,7 +213,7 @@ if(stdinFlag==0){
   g=0;
 //Open File
 if(stdoutFlag==0){
-    sys_write(5,"zzz.txt", 100|1, 777,g);
+    sys_writeFile(*(argv+argc-1), 100|1, 777,g);
   //sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
 }else{
 g=1;}
