@@ -81,8 +81,9 @@ int main(int argc, char **argv){
 //Open File
   if(stdinFlag==0){//outFlag==0){
 	g=-50;
+	//open file
   	sys_write(5,*(argv+argc-2),0,0,g);//sys_write(5,*(argv+argc-1),0,0,g);
-	
+	//if input file doesn't exist
 	if(g<0){
 	     char* helpMsgOpenF = "Unable to open input file.\n";
              int flying;
@@ -107,15 +108,28 @@ int* ludo=&howMuchRed;
 int flagMakegRed=0;
 */
 //ghi
+char* inputty = NULL;
 if(stdinFlag==0){
-	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);
-	 
+	//buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);
+	buffer=&bufferA;
+	sys_read(3,g, buffer, 5000)
+	 twoArg(6,g);
 }else{
-	buffer = &bufferA;
+	buffer=&bufferA;
+	
+	/*az=0;
+	while(1){
+		*(buffer+az) = _getch();
+		if ((ch == EOF) || (ch == 0) || (ch == -1) {
+			break;}//currChar==EOF || currChar==0 || currChar ==-1
+	} */
+	//
 	//printf("\nHow much red before =%d\n",howMuchRed);
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
-	sys_read(3,0,buffer,9998);
-        //sys_read(*(ludo),buffer,9998);
+	//sys_read(3,0,buffer,9998);
+	printf("\n\n\nHey g might randomly fuck up idk. g=%d\n\n",g);
+        sys_read(3,0, buffer,9998);
+	printf("\n\n\nThe first char in the buffer is %c\n\n\n",*(buffer+1));
 	//printf("\n\nbuffer  = %s\n\n",buffer);
 	/*
 	printf("\nHow much red after =%d\n",howMuchRed);
@@ -123,12 +137,16 @@ if(stdinFlag==0){
 	*/
         //sys_read(3,howMuchRed,buffer,9998);
 	//printf("\n\nbuffer second char = %c\n\n",*(buffer+1));
-
+	
+	
+	
 }
   	//print bad map
 //Close File
-  twoArg(6,g);
   
+  /*char* helpMsgOpenF = "Unable to open input file.\n";
+             int flying;
+	     sys_write(4,1,helpMsgOpenF,length(helpMsgOpenF),flying);*/
   
   
   
@@ -189,7 +207,7 @@ if(stdinFlag==0){
 struct stat ostbuf;
 struct stat *opointy=&ostbuf;
 short ofileSize=0;
-int tfd=0;
+int tfd=2;
 if(stdoutFlag==0){
     //
     sys_write(5,*(argv+argc-1),100|1,511,g);//|1,511,g);
@@ -201,11 +219,10 @@ if(stdoutFlag==0){
 	statistics(195,*(argv+argc-1), opointy);
 	ofileSize = ostbuf.st_size;
 	printf("\nThe size of the file is %d\n",ofileSize);
+	g=tfd;
 }else{g=1;}
 
 printf("\n\ng after open is %d\n\n",g);
- g=tfd;
-
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
@@ -216,14 +233,18 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   char* crlf = "\r\n";
   offset=0;
   int amount=0;
+  char null=0;
+  char* ns=&null;
+  int skip=0;
   if(dFlag && !rFlag)
   	while(1){
             currChar=*(buffer+offset);
             if((currChar==EOF || currChar == 0 || currChar ==-1)){
-                char null=0;
-		char* ns=&null;
+			if(stdoutFlag==0){
+                
 		printf("\n\nDifference %d.\n\n",ofileSize-offset);
 		int i=1;
+	//doesn't have size of file
 		int nuld=ofileSize-offset;
 		
 		//get size of output file
@@ -232,9 +253,11 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 		}
 		//while offset++<size then null 
 		//sys_write(4,g,ns,1,amount);
-		break;
+			}		
+				break;
 }
-            if(10==(int)currChar)//write
+	    if(13==(int)currChar){skip=1;}
+            if(skip!=1 && (10==(int)currChar))//write
 		sys_write(4,g,cr,1,amount);
 	    sys_write(4,g,(buffer+offset),1,amount);
             //printf("I just put %x in the file\n",currChar);
@@ -244,8 +267,21 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   if(uFlag && !rFlag)
         while(1){
             currChar=*(buffer+offset);
-            if((currChar==EOF || currChar == 0 || currChar ==-1))
+            if((currChar==EOF || currChar == 0 || currChar ==-1)){
+			if(stdoutFlag==0){
+
+		printf("\n\nDifference %d.\n\n",ofileSize-offset);
+		int i=1;
+		//doesn't have size of file
+		int nuld=ofileSize-offset;
+		//get size of output file
+ 		for(;i<nuld;i++){
+			sys_write(4,g,ns,1,amount);
+		}
+
+		}
                 break;
+}
             if(13!=(int)currChar)
                 sys_write(4,g,(buffer+offset),1,amount);
             //printf("I just put %x in the file\n",currChar);
@@ -305,7 +341,9 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         }
         else
             dosFlag=dFlag;
-	printf("\ng=%d\n",g);        
+	if(ofileSize==0){dosFlag=0;}
+	dosFlag=0;
+	printf("\ndosFlag=%d\n",dosFlag);        
 	
 	offset=0;
         int writeIt;//ghi fix writeIt
@@ -324,8 +362,8 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
                 	if( dosFlag && writeIt!=(newLineCount-1) ){
                     		sys_write(4,g,crlf,1,amount);
                 	}
-                	if(!dosFlag && writeIt != (newLineCount-1) )
-                    		sys_write(4,g,lf,1,amount);
+                	if(!dosFlag && writeIt != (newLineCount-1) ){
+                    		sys_write(4,g,lf,1,amount);}
                 	break;
                 }
             	sys_write(4,g,(buffer+cobain+offset++),1,amount);
@@ -334,9 +372,11 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         
     }    
   //munmap(&buffer, fileSize);
-  twoArg(6,g); 
+  printf("\n\n\nLast call to two arg gets g=%d.\n\n\n",g);
+if(stdoutFlag==0){
+  twoArg(6,g); }
 //Exit
-  int status=0;
+  int status=2;
   sys_exit(status);
   return(0);
 }

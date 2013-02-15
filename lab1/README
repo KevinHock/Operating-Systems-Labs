@@ -1,11 +1,3 @@
-Describe how you implemented the main programming assignment. The README
-file should describe what you did, what approach you took, results of any
-measurements you made, which files are included in your submission and what
-they are for, etc.  Feel free to include any other information you think is
-helpful to us in this README; it can only help your grade.
-
-int* array[10000];
-        int** newLineArray = &array;
-
-I wrote it in libc first and it worked perfectly. Then 
-I tried calling mmap through this format buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); and it destroyed me. 
+If you look at my algorithms and logic it's all solid, design flaws did me in.
+It goes through checks all the flags and determines the code flow from there.
+I wrote it in libc first and it worked perfectly. Then everything was going great until I tried calling mmap through this format "buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);" and it destroyed me and my entire project. I was unware of the fact that I could just use [1000] until it was all too late; have mercy. 
