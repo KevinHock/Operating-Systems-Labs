@@ -256,9 +256,11 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 			}		
 				break;
 }
+
 	    if(13==(int)currChar){skip=1;}
-            if(skip!=1 && (10==(int)currChar))//write
+            if((10==(int)currChar) && skip==0)//write//skip!=1 && 
 		sys_write(4,g,cr,1,amount);
+	   // skip=0;
 	    sys_write(4,g,(buffer+offset),1,amount);
             //printf("I just put %x in the file\n",currChar);
 	    offset++;
