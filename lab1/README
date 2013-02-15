@@ -3,3 +3,9 @@ file should describe what you did, what approach you took, results of any
 measurements you made, which files are included in your submission and what
 they are for, etc.  Feel free to include any other information you think is
 helpful to us in this README; it can only help your grade.
+
+int* array[10000];
+        int** newLineArray = &array;
+
+I wrote it in libc first and it worked perfectly. Then 
+I tried calling mmap through this format buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); and it destroyed me. 

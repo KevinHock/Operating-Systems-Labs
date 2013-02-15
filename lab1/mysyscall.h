@@ -30,17 +30,14 @@
 #define sys_getpid(arg1) asm("pushl %%eax\n\t" "movl $20, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"0" (arg1));
 
 
-//#define brk(arg1, arg2, arg3) asm("int $0x80\n\t" :"=r" (arg3):"a" (arg1), "b" (arg2));
-<<<<<<< HEAD
+
 #define sys_writeFile(arg1, arg2, arg3, arg4) asm ("pushl %%eax\n\t" "movl $5, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %3\n\t" "popl %%eax\n\t":"=r" (arg4):"b" (arg1), "c" (arg2), "d" (arg3));
-=======
->>>>>>> parent of d505d13... g=-13
 
 #define sys_write(arg1, arg2, arg3, arg4, arg5) asm ("int $0x80\n\t" "movl %%eax, %4":"=r" (arg5):"a" (arg1), "b" (arg2), "c" (arg3),"d" (arg4));
 #define twoArg(arg1, arg2) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2));
 #define statistics(arg1, arg2, arg3) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2), "c" (arg3));
-//#define sys_read(arg1, arg2, arg3,arg4) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2), "c" (arg3), "d" (arg4));	
-#define sys_read(arg1, arg2, arg3) asm("pushl %%eax\n\t" "movl $3, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"b" (arg1), "c" (arg2), "d" (arg3));
+#define sys_read(arg1, arg2, arg3,arg4) asm("int $0x80\n\t"::"a" (arg1), "b" (arg2), "c" (arg3), "d" (arg4));	
+//#define sys_read(arg1, arg2, arg3) asm("pushl %%eax\n\t" "movl $3, %%eax\n\t" "int $0x80\n\t" "movl %%eax, %0\n\t" "popl %%eax\n\t":"=r" (arg1):"b" (arg1), "c" (arg2), "d" (arg3));
 
  //       sys_read			 
 /*

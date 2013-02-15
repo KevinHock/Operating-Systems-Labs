@@ -1,5 +1,4 @@
 #include "mysyscall.h"
-
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <stdlib.h>
@@ -32,40 +31,8 @@ void letterFlagSetter(char* string);
 char* turnToChar(int number);
 
 
-char* turnToChar(int number){
-  long int ttci;
-  int ttclength=1;
-  for(ttci=1;ttci<1000000;ttci*=10){
-	if(   (number-(ttci*10))    <0){
-		break;}
-	ttclength++;
-  }
-  ttcarr[ttclength]=0;
-  //for(;ttcLength)
-  //if length is 3
-  //0 1 2
-  //965
-  //mod 10 -> 5 ---> ttcLength-1
-  //number=number/10;
-  //...tccLength-2
-  int ttcindexfl=1;
-  int ttcleftover=-1;
-  printf("\n\nHello\n\n");
-  while(ttclength-ttcindexfl>=0){
-	ttcleftover=number%10;
-	ttcleftover+=48;
-	printf("\n\nLadeda %c Ladeda\n\n",(char)ttcleftover);
-	ttcarr[ttclength-ttcindexfl]=(char)ttcleftover;
-	number/=10;
-        ttcindexfl++;
-  }
-  ttcRet = &ttcarr;
-  return ttcRet;
-}
 
-
-
-int main(int argc, char **argv) {
+int main(int argc, char **argv){
   int flagLoop;
   //Set all letter flags
   if(argc>3)
@@ -79,8 +46,9 @@ int main(int argc, char **argv) {
   //Can't have DOS and Unix style newlines
   if(dFlag==1 && uFlag==1){
 	char* errMsg = "ERROR: Cannot have DOS Style newlines and Unix Style newlines.\n";
-	int resultsOfWrite;
+	int resultsOfWrite=-4;//useless arg to sys_write. 	
 	sys_write(4,1,errMsg,length(errMsg),resultsOfWrite);
+	//printf("\nResults of Write=%d\n",resultsOfWrite);
 	dFlag=uFlag=rFlag=cFlag=0;
         hFlag=1;
   }
@@ -111,11 +79,10 @@ int main(int argc, char **argv) {
   int g=20;
   int* f=&g;
 //Open File
-  //printf("\nstdoutFlag=%d\nstdinFlag=%d\n",stdoutFlag,stdinFlag);
-
-
   if(stdinFlag==0){//outFlag==0){
+	g=-50;
   	sys_write(5,*(argv+argc-2),0,0,g);//sys_write(5,*(argv+argc-1),0,0,g);
+	
 	if(g<0){
 	     char* helpMsgOpenF = "Unable to open input file.\n";
              int flying;
@@ -124,7 +91,7 @@ int main(int argc, char **argv) {
   	     sys_exit(status);
 	}
 	printf("\nThe g = %d\n",g);
-	
+//	printf("\nThe string g =%s\n",g);
 }else{
   	g=1;}
   printf("fd is %d\n",g);
@@ -134,25 +101,29 @@ int main(int argc, char **argv) {
 //if stdin != 1
 char bufferA[10000];
 char* buffer;
+/*
 int howMuchRed=0;
 int* ludo=&howMuchRed;
 int flagMakegRed=0;
+*/
 //ghi
 if(stdinFlag==0){
-	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0); 
+	buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);
+	 
 }else{
 	buffer = &bufferA;
 	//printf("\nHow much red before =%d\n",howMuchRed);
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
-<<<<<<< HEAD
-        sys_read(*(ludo),buffer,9998);
+	sys_read(3,0,buffer,9998);
+        //sys_read(*(ludo),buffer,9998);
 	//printf("\n\nbuffer  = %s\n\n",buffer);
+	/*
 	printf("\nHow much red after =%d\n",howMuchRed);
 	flagMakegRed=1;
-=======
-        sys_read(3,howMuchRed,buffer,9998);
+	*/
+        //sys_read(3,howMuchRed,buffer,9998);
 	//printf("\n\nbuffer second char = %c\n\n",*(buffer+1));
->>>>>>> parent of d505d13... g=-13
+
 }
   	//print bad map
 //Close File
@@ -200,7 +171,6 @@ if(stdinFlag==0){
 	sys_write(4,2,beirErr,1,resultsOfWritingNumber);
 }
 
-<<<<<<< HEAD
 
 
 
@@ -212,29 +182,30 @@ if(stdinFlag==0){
 
 
 
-  printf("\ng =%d\n",g); 
-  //g=0;
+
+  printf("\ng =%d And is about to get turned to -50\n",g); 
+  g=-50;
 //Open File
+struct stat ostbuf;
+struct stat *opointy=&ostbuf;
+short ofileSize=0;
+int tfd=0;
 if(stdoutFlag==0){
-    sys_writeFile(*(argv+argc-1), 100|1, 777,g);
-    if(flagMakegRed){
-    	g=howMuchRed;}
-  //sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
-}else{
-g=1;}
-printf("\ng =%d\n",g);
-=======
-  printf("\ncFlag=%d\n",cFlag);
-  
-//Open File
-if(stdout==0){
-  sys_write(5,*(argv+argc-1),100|1,777,g);//ghi
-}else{
-g=1;}
+    //
+    sys_write(5,*(argv+argc-1),100|1,511,g);//|1,511,g);
+    tfd=g;
+    printf("\n\n\ng ============== %d\n\n\n\n\n",g);
+    //sys_writeFile(*(argv+argc-1), 100|1, 511, g);//777,g);//this can't create a new file and put the handle in g
+    /*if(flagMakegRed){
+    	g=howMuchRed;}*/
+	statistics(195,*(argv+argc-1), opointy);
+	ofileSize = ostbuf.st_size;
+	printf("\nThe size of the file is %d\n",ofileSize);
+}else{g=1;}
 
-printf("\n\ng is %d\n\n",g);
- 
->>>>>>> parent of d505d13... g=-13
+printf("\n\ng after open is %d\n\n",g);
+ g=tfd;
+
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
@@ -248,12 +219,23 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   if(dFlag && !rFlag)
   	while(1){
             currChar=*(buffer+offset);
-            if((currChar==EOF || currChar == 0 || currChar ==-1))
-                break;
+            if((currChar==EOF || currChar == 0 || currChar ==-1)){
+                char null=0;
+		char* ns=&null;
+		printf("\n\nDifference %d.\n\n",ofileSize-offset);
+		int i=1;
+		int nuld=ofileSize-offset;
+		
+		//get size of output file
+ 		for(;i<nuld;i++){
+			sys_write(4,g,ns,1,amount);
+		}
+		//while offset++<size then null 
+		//sys_write(4,g,ns,1,amount);
+		break;
+}
             if(10==(int)currChar)//write
 		sys_write(4,g,cr,1,amount);
-	    if(amount!=1){}
-		//throw exception
 	    sys_write(4,g,(buffer+offset),1,amount);
             //printf("I just put %x in the file\n",currChar);
 	    offset++;
@@ -287,9 +269,6 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 
         *(newLineArray+nlaIndex)=0;
 
-
-
-
         int ttt=1;
         //Get offsets
         for(;;){
@@ -304,13 +283,13 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             ttt++;
             printf("Count is %d\n",*(newLineArray+nlaIndex));
         }
-        
+        /*
         int p;
         for(p=newLineCount-1;p>=0;p--){
             printf("The number to add to buffer is %d \n",(int)(*(newLineArray+p)));
             printf("Offset %d should be %x\n",p,*(buffer+(int)(*(newLineArray+p))));
         }
-	
+	*/
         //We have the offsets
         int dosFlag=0;
 	offset=0;
@@ -326,7 +305,8 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         }
         else
             dosFlag=dFlag;
-	printf("\ndosFlag=%d\n",dosFlag);        
+	printf("\ng=%d\n",g);        
+	
 	offset=0;
         int writeIt;//ghi fix writeIt
         int cobain=0;
@@ -353,12 +333,9 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         }
         
     }    
-  
   //munmap(&buffer, fileSize);
   twoArg(6,g); 
 //Exit
-
-
   int status=0;
   sys_exit(status);
   return(0);
@@ -370,7 +347,34 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
 
 
 
-
+char* turnToChar(int number){
+  long int ttci;
+  int ttclength=1;
+  for(ttci=1;ttci<1000000;ttci*=10){
+	if(   (number-(ttci*10))    <0){
+		break;}
+	ttclength++;
+  }
+  ttcarr[ttclength]=0;
+  //for(;ttcLength)
+  //if length is 3
+  //0 1 2
+  //965
+  //mod 10 -> 5 ---> ttcLength-1
+  //number=number/10;
+  //...tccLength-2
+  int ttcindexfl=1;
+  int ttcleftover=-1;
+  while(ttclength-ttcindexfl>=0){
+	ttcleftover=number%10;
+	ttcleftover+=48;
+	ttcarr[ttclength-ttcindexfl]=(char)ttcleftover;
+	number/=10;
+        ttcindexfl++;
+  }
+  ttcRet = &ttcarr;
+  return ttcRet;
+}
 
 
 void letterFlagSetter(char* string){

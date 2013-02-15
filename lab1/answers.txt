@@ -1,14 +1,13 @@
 Author: Kevin Hock
 
 Answer for question 1:
-	It is comparing the return value of ? to see whether or not the syscall is bad (a negative number).
+	It is comparing the syscall#  to see whether or not the syscall is invalid.This is because right after it jumps to the syscall as indicated by call *sys_call_table(,%eax,4)
 Answer for question 2:
-	It depends on the syscall but..
-	EAX for the syscall number 
-	EBX for the file descriptor 
-	ECX for a buffer like "hello"
-	EDX for a string length
-	ESI for 
-	EDI for 	
+	What are in the registers depends on the syscall except eax dictates which syscall it is. As far as rsp is concerned though the stacklayout looks like this. 
+         0(%esp) - %ebx
+         4(%esp) - %ecx
+         8(%esp) - %edx
+         C(%esp) - %esi
+        10(%esp) - %edi
+        14(%esp) - %ebp
 
-                                                                                                                                     D 
