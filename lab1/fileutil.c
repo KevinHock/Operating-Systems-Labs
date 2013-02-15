@@ -72,7 +72,7 @@ int main(int argc, char **argv){
   if(stdinFlag==0){//outFlag==0){
   	statistics(195,*(argv+argc-2), pointy);
   	fileSize = stbuf.st_size;
-  	printf("\nThe size of the file is %d\n",fileSize);
+  	//printf("\nThe size of the file is %d\n",fileSize);
   }
   
 
@@ -91,11 +91,11 @@ int main(int argc, char **argv){
 	     int status=1;
   	     sys_exit(status);
 	}
-	printf("\nThe g = %d\n",g);
+	//printf("\nThe g = %d\n",g);
 //	printf("\nThe string g =%s\n",g);
 }else{
   	g=1;}
-  printf("fd is %d\n",g);
+  //printf("fd is %d\n",g);
  
 
 //malloc from file
@@ -127,9 +127,9 @@ if(stdinFlag==0){
 	//printf("\nHow much red before =%d\n",howMuchRed);
 	//copyIntoBuffer(buffer, );  //if(buffer == MAP_FAILED)
 	//sys_read(3,0,buffer,9998);
-	printf("\n\n\nHey g might randomly fuck up idk. g=%d\n\n",g);
+	//printf("\n\n\nHey g might randomly fuck up idk. g=%d\n\n",g);
         sys_read(3,0, buffer,9998);
-	printf("\n\n\nThe first char in the buffer is %c\n\n\n",*(buffer+1));
+	//printf("\n\n\nThe first char in the buffer is %c\n\n\n",*(buffer+1));
 	//printf("\n\nbuffer  = %s\n\n",buffer);
 	/*
 	printf("\nHow much red after =%d\n",howMuchRed);
@@ -153,14 +153,14 @@ if(stdinFlag==0){
   
   
   char currChar=*(buffer); 
-  printf("\nChar = %c\n",currChar);
+  //printf("\nChar = %c\n",currChar);
   
 //-c flag   
   int newLineCount=0,offset=0;
   if(cFlag==1 || rFlag==1)
 	for(;;){
             currChar=*(buffer+offset++);
-	    printf("currChar = %x\n", currChar);
+	    //printf("currChar = %x\n", currChar);
             if(10==(int)currChar)
                 newLineCount++;
             if(currChar==EOF || currChar==0 || currChar ==-1)
@@ -201,7 +201,7 @@ if(stdinFlag==0){
 
 
 
-  printf("\ng =%d And is about to get turned to -50\n",g); 
+  //printf("\ng =%d And is about to get turned to -50\n",g); 
   g=-50;
 //Open File
 struct stat ostbuf;
@@ -212,17 +212,17 @@ if(stdoutFlag==0){
     //
     sys_write(5,*(argv+argc-1),100|1,511,g);//|1,511,g);
     tfd=g;
-    printf("\n\n\ng ============== %d\n\n\n\n\n",g);
+    //printf("\n\n\ng ============== %d\n\n\n\n\n",g);
     //sys_writeFile(*(argv+argc-1), 100|1, 511, g);//777,g);//this can't create a new file and put the handle in g
     /*if(flagMakegRed){
     	g=howMuchRed;}*/
 	statistics(195,*(argv+argc-1), opointy);
 	ofileSize = ostbuf.st_size;
-	printf("\nThe size of the file is %d\n",ofileSize);
+	//printf("\nThe size of the file is %d\n",ofileSize);
 	g=tfd;
 }else{g=1;}
 
-printf("\n\ng after open is %d\n\n",g);
+//printf("\n\ng after open is %d\n\n",g);
 /*
 int la;
 sys_write(4,1,helpMsg,length(helpMsg),la);
@@ -242,7 +242,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             if((currChar==EOF || currChar == 0 || currChar ==-1)){
 			if(stdoutFlag==0){
                 
-		printf("\n\nDifference %d.\n\n",ofileSize-offset);
+		//printf("\n\nDifference %d.\n\n",ofileSize-offset);
 		int i=1;
 	//doesn't have size of file
 		int nuld=ofileSize-offset;
@@ -272,7 +272,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             if((currChar==EOF || currChar == 0 || currChar ==-1)){
 			if(stdoutFlag==0){
 
-		printf("\n\nDifference %d.\n\n",ofileSize-offset);
+		//printf("\n\nDifference %d.\n\n",ofileSize-offset);
 		int i=1;
 		//doesn't have size of file
 		int nuld=ofileSize-offset;
@@ -311,7 +311,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         //Get offsets
         for(;;){
             currChar=*(buffer+offset++);
-            printf("currChar = %x\n", currChar);
+            //printf("currChar = %x\n", currChar);
             if(currChar==EOF || currChar == 0 || currChar ==-1)
                 break;
             if(10==(int)currChar)
@@ -319,7 +319,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             else
                 *(newLineArray+nlaIndex)=ttt;
             ttt++;
-            printf("Count is %d\n",*(newLineArray+nlaIndex));
+            //printf("Count is %d\n",*(newLineArray+nlaIndex));
         }
         /*
         int p;
@@ -345,7 +345,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             dosFlag=dFlag;
 	if(ofileSize==0){dosFlag=0;}
 	dosFlag=0;
-	printf("\ndosFlag=%d\n",dosFlag);        
+	//printf("\ndosFlag=%d\n",dosFlag);        
 	
 	offset=0;
         int writeIt;//ghi fix writeIt
@@ -374,7 +374,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         
     }    
   //munmap(&buffer, fileSize);
-  printf("\n\n\nLast call to two arg gets g=%d.\n\n\n",g);
+  //printf("\n\n\nLast call to two arg gets g=%d.\n\n\n",g);
 if(stdoutFlag==0){
   twoArg(6,g); }
 //Exit
