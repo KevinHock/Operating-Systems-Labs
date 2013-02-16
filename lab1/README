@@ -1,6 +1,12 @@
+Unsolved test cases:
+1.Infinite Loop 	./stdlib -c - -		Read hangs and sleep might be part of stdlib, low priority on my list either way.
+
 Design and subtle logic flaws did me in, after 3 hard resets here it is.
 It goes through checks all the flags and determines the code flow from there.
 I wrote it in libc first and it worked perfectly. Then everything was going great until I tried calling mmap through this format "buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);" and it destroyed me and my entire project. I was unware of the fact that I could just use [1000] until it was all too late; have mercy. 
+
+It also works a lot better with libc although there is no reason for it. I used all syscalls and just compiled with gcc for printfs.
+
 
 
 libc is easier to read so here is the pseudo real program.

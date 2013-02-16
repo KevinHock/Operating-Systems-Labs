@@ -1,8 +1,6 @@
 #include "mysyscall.h"
 #include <sys/stat.h>
 #include <sys/mman.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 void util_start(void);
 
@@ -75,7 +73,7 @@ int main(int argc, char **argv){
   	//printf("\nThe size of the file is %d\n",fileSize);
   }
   
-
+  
   int g=20;
   int* f=&g;
 //Open File
@@ -108,7 +106,6 @@ int* ludo=&howMuchRed;
 int flagMakegRed=0;
 */
 //ghi
-char* inputty = NULL;
 if(stdinFlag==0){
 	//buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);
 	buffer=&bufferA;
@@ -163,7 +160,7 @@ if(stdinFlag==0){
 	    //printf("currChar = %x\n", currChar);
             if(10==(int)currChar)
                 newLineCount++;
-            if(currChar==EOF || currChar==0 || currChar ==-1)
+            if(currChar==0 || currChar<0)//currChar==EOF || ghi
                 break;
         }
   if(cFlag==1){//ghi
@@ -239,7 +236,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   if(dFlag && !rFlag)
   	while(1){
             currChar=*(buffer+offset);
-            if((currChar==EOF || currChar == 0 || currChar ==-1)){
+            if((currChar == 0 || currChar<0)){//currChar==EOF || 
 			if(stdoutFlag==0){
                 
 		//printf("\n\nDifference %d.\n\n",ofileSize-offset);
@@ -269,7 +266,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
   if(uFlag && !rFlag)
         while(1){
             currChar=*(buffer+offset);
-            if((currChar==EOF || currChar == 0 || currChar ==-1)){
+            if((currChar == 0 || currChar ==-1)){//currChar==EOF || 
 			if(stdoutFlag==0){
 
 		//printf("\n\nDifference %d.\n\n",ofileSize-offset);
@@ -312,7 +309,7 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
         for(;;){
             currChar=*(buffer+offset++);
             //printf("currChar = %x\n", currChar);
-            if(currChar==EOF || currChar == 0 || currChar ==-1)
+            if(currChar == 0 || currChar<0)//currChar==EOF || 
                 break;
             if(10==(int)currChar)
                 nlaIndex++;
@@ -337,14 +334,14 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
                 currChar=*(buffer+offset++);
                 if(currChar==13)
                     dosFlag=1;
-                if(currChar==EOF || currChar == 0 || currChar ==-1 || currChar == 10)
+                if(currChar == 0 || currChar<0 || currChar == 10)//currChar==EOF || 
                     break;
             }
         }
         else
             dosFlag=dFlag;
 	if(ofileSize==0){dosFlag=0;}
-	dosFlag=0;
+	//dosFlag=0;
 	//printf("\ndosFlag=%d\n",dosFlag);        
 	
 	offset=0;
@@ -360,9 +357,9 @@ sys_write(4,1,helpMsg,length(helpMsg),la);
             //
             for(;;){
             	currChar=*(buffer+cobain+offset);
-            	if( currChar == 10 || currChar == EOF || currChar == 0 || currChar == -1  ){
+            	if( currChar == 10 || currChar == 0 || currChar<0  ){//currChar == EOF || 
                 	if( dosFlag && writeIt!=(newLineCount-1) ){
-                    		sys_write(4,g,crlf,1,amount);
+                    		sys_write(4,g,crlf,2,amount);
                 	}
                 	if(!dosFlag && writeIt != (newLineCount-1) ){
                     		sys_write(4,g,lf,1,amount);}
