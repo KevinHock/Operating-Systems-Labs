@@ -22,7 +22,7 @@ asm ("util_start:\r\n"
      "subl $4, %eax\r\n"
      "pushl (%eax)\r\n"
      "  call main\r\n");
-//
+
 char crlfArr[]="\r\n";//Stupid -Werror bs
 char* crlf = (char *)&crlfArr;
 char crChar = '\r';
@@ -95,14 +95,9 @@ int main(int argc, char **argv){
 	//Close input file
 	twoArg(6,fdin);
   }else{//Read from stdin
-	sys_read(3,0, ibuffer,3);
-	sys_write(4,1,ibuffer,3,uselessPara);
-	status=1;
-  	sys_exit(status);
-	//ghi sys_read(3,0, ibuffer,9998);//Maybe read one char at a time? ghi
+	sys_read(3,0, ibuffer,9998);//Maybe read one char at a time? ghi
   }
   
-
   char currChar=*(ibuffer); 
   int newLineCount=0,offset=0;
   //Need number of newlines for -c and -r
@@ -153,10 +148,10 @@ int* f=&fdin;
 	holder=fdout;
 	statistics(195,*(argv+argc-1), opointy);
 	ofileSize = ostbuf.st_size;//HOW DOES THIS MAKE ibuffer NULL IN IT'S FIRST 4 BYTES?
-	*(ibuffer)=wtf[0];//ghi
+	/**(ibuffer)=wtf[0];//ghi
 	*(ibuffer+1)=wtf[1];
  	*(ibuffer+2)=wtf[2];
-	*(ibuffer+3)=wtf[3];
+	*(ibuffer+3)=wtf[3];*/
 	fdout=holder;
   }else
    	fdout=1;
@@ -165,26 +160,29 @@ int* f=&fdin;
   offset=0;
   int skip=0,leftOver=0;
   
-
   if(dFlag && !rFlag)
   	while(1){
             currChar=*(ibuffer+offset);
             if((currChar == 0 || currChar<0)){
+		//Attempt to overwrite existing
 		if(stdoutFlag==0){
 			//Difference = ofileSize-offset
 			leftOver=ofileSize-offset;
 			//get size of output file
- 			for(i=1;i<leftOver;i++){
+ 			for(i=1;i<leftOver;i++)
 				sys_write(4,fdout,null,1,uselessPara);
-			}
 		}		
 		break;
 	    }
+	    //If it's already a DOS file
 	    if(13==(int)currChar)
 		skip=1;
+	    //If it's a UNIX file put CR before every LF
 	    if((10==(int)currChar) && skip==0)
 		sys_write(4,fdout,cr,1,uselessPara);
+	    //Put current character in file
 	    sys_write(4,fdout,(ibuffer+offset),1,uselessPara);
+	    //Go to next character
 	    offset++;
         }
 //We already checked that d and u aren't both set so no offset=0;
@@ -212,7 +210,7 @@ int* f=&fdin;
         int** newLineArray = (int **)&array;
         *(newLineArray+nlaIndex)=0;
         int ttt=1;
-        //Get offsets
+        //Get offsets in newLineArray
         for(;;){
             currChar=*(ibuffer+offset++);
             if(currChar == 0 || currChar<0)
@@ -233,8 +231,8 @@ int* f=&fdin;
         //We have the offsets
         int dosFlag=0;
 	offset=0;
-        //Assuming CR won't be in a UNIX text file.
-        if(!uFlag && !dFlag)
+        //If it's undecided decide from the input file.	Here we are assuming CR won't be in a UNIX text file.
+        if((uFlag==0) && (dFlag==0))
             for(;;){
                 currChar=*(ibuffer+offset++);
                 if(currChar==13)
@@ -242,12 +240,13 @@ int* f=&fdin;
                 if(currChar == 0 || currChar<0 || currChar == 10)
                     break;
             }
-        else
+        else//It is decided
             dosFlag=dFlag;
 	//If we just created the file don't put \r's in
-	if(ofileSize==0)
-		dosFlag=0;
+	//if(ofileSize==0)
+	//	dosFlag=0;
 	offset=0;
+	//
         int cobain=0;
         for(i=newLineCount-1;i>=-1;i--){
             if(i!=-1)
@@ -259,14 +258,17 @@ int* f=&fdin;
             //
             for(;;){
             	currChar=*(ibuffer+cobain+offset);
+		//If it sees a CR it skips over it
             	if( currChar == 10 || currChar == 0 || currChar<0  ){
-                	if( (dosFlag && i)  != (newLineCount-1) )
+                	if((dosFlag==1) && (i != (newLineCount-1)) )
                     		sys_write(4,fdout,crlf,2,uselessPara);
-                	if( (!dosFlag && i) != (newLineCount-1) )
+                	if((dosFlag==0) && (i != (newLineCount-1)))
                     		sys_write(4,fdout,lf,1,uselessPara);
                 	break;
                 }
-            	sys_write(4,fdout,(ibuffer+cobain+offset++),1,uselessPara);
+		if(currChar!=13)
+            		sys_write(4,fdout,(ibuffer+cobain+offset),1,uselessPara);
+		offset++;
             }
         }
   }    
