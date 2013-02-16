@@ -1,7 +1,9 @@
 Unsolved test cases:
 1.Infinite Loop 	./stdlib -c - -		Read hangs and sleep might be part of stdlib, low priority on my list either way.
 
-The line
+It defaults to making the output file dos or unix depending on the input file.
+
+****The line
 ofileSize = ostbuf.st_size;
 causes things on the stack to be overwritten only when compiled with -nostdlib (no I wasn't even including stdlib or stdio) which is why this is late. If you don't believe me there is an array at line 123 the size of a dword that gets overwritten perfectly like a good exploit.
 
