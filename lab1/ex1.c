@@ -1,30 +1,26 @@
 //
-// Simple inline assembly example
-// 
-// For JOS lab 1 exercise 1
+// Lab 1 
+// Exercise 1
 //
+// Author: Kevin Hock
 
 #include <stdio.h>
+#include <stdlib.h>
 
-int
-main(int argc, char **argv)
+#define inc(arg1) asm("inc %0": "=r" (arg1) : "0" (arg1));
+
+int main(int argc, char **argv)
 {
   int x = 1;
-  printf("Hello x = %d\n", x);
   
-  //
-  // Put in-line assembly here to increment
-  // the value of x by 1 using in-line assembly
-  //
+  printf("Before x = %d.\n", x);
+  inc(x);
+  printf("After x = %d.\n", x);
 
-  printf("Hello x = %d after increment\n", x);
-
-  if(x == 2){
+  if(x == 2)
     printf("OK\n");
-  }
-  else{
+  else
     printf("ERROR\n");
-  }
-
+  
   return 0;
 }

@@ -1,5 +1,10 @@
-Describe how you implemented the main programming assignment. The README
-file should describe what you did, what approach you took, results of any
-measurements you made, which files are included in your submission and what
-they are for, etc.  Feel free to include any other information you think is
-helpful to us in this README; it can only help your grade.
+Unsolved test cases:
+1.Infinite Loop 	./stdlib -c - -		Read hangs and sleep might be part of stdlib, low priority on my list either way.
+
+It defaults to making the output file dos or unix depending on the input file.
+
+****The line
+ofileSize = ostbuf.st_size;
+causes things on the stack to be overwritten only when compiled with -nostdlib (no I wasn't even including stdlib or stdio) which is why this is late. If you don't believe me there is an array at line 123 the size of a dword that gets overwritten perfectly like a good exploit.
+
+I wrote it in libc first and it worked perfectly. Then everything was going great until I tried calling mmap through this format "buffer = mmap(0, fileSize, PROT_READ, MAP_SHARED, g, 0);" and it destroyed me and my entire project.
