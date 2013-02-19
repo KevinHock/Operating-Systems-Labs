@@ -16,11 +16,20 @@ void pwd(char **envp);
 // Then print after = [4] to n
 void pwd(char **envp){
 	char** env;
-     	for(env = envp; *env != 0; env++){
-    		char* thisEnv = *env;
-		char[] ENV   = "ENV=";
-		char[3] thisEnvArr = *env;
-    		if(thisEnvArr==ENV){
+	char thisEnvArr[2];
+     	char zero;
+	char one;
+	for(env = envp; *env != 0; env++){
+    		//char* thisEnv = *env;
+		char* envCaps ="EN";
+		//char[2] thisEnvArr;
+		zero=env[0][0];
+		one=env[0][1];
+		thisEnvArr[0]=zero;
+		thisEnvArr[1]=one;
+		thisEnvArr[2]=(char)0;
+		printf("thisEnvArr=%s\n",thisEnvArr);
+    		if(thisEnvArr==envCaps){
 			printf("Woohoo\nWoohoo\n");
 		}  
     	}
@@ -54,7 +63,20 @@ int main (int argc, char ** argv, char **envp) {
 		// "swish> "
     		rv = write(1, prompt, strlen(prompt));
     		
-		
+		/*
+		pid = fork()
+		if(pid==0)
+			I'm the child
+		else
+			I'm parent of Pid
+
+		int trying = execl("/usr/bin/firefox","",null);
+		trying;
+		if(trying==-1)
+			perror("execl");
+		*/
+
+
     		if (!rv) { 
       			finished = 1;
       			break;
