@@ -1,40 +1,69 @@
 /* CSE 306: Sea Wolves Interactive SHell */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
 // Assume no input line will be longer than 1024 bytes
 #define MAX_INPUT 1024
 
-int i=-1;
-int debug=1;//1 for development 0 for production
-
 void checkDebug(int argc, char** argv);
 void pwd(char **envp);
+int printPrompt(char **envp);
+void findEnvVar(char* envVar,char **envp);
 
-// Go through and find PWD in **envp
-// Then print after = [4] to n
-void pwd(char **envp){
-	char** env;
-	char thisEnvArr[2];
-     	char zero;
-	char one;
-	for(env = envp; *env != 0; env++){
-    		//char* thisEnv = *env;
-		char* envCaps ="EN";
-		//char[2] thisEnvArr;
-		zero=env[0][0];
-		one=env[0][1];
-		thisEnvArr[0]=zero;
-		thisEnvArr[1]=one;
-		thisEnvArr[2]=(char)0;
-		printf("thisEnvArr=%s\n",thisEnvArr);
-    		if(thisEnvArr==envCaps){
-			printf("Woohoo\nWoohoo\n");
-		}  
-    	}
+void bin(char* var, char* progName);
+
+void bin(char* var, char* progName){
+	/*	It then splits it by ':' and tries to execl.
+		If it succeeds in one attempt then it returns 1 and if not it return -1;	i*/
+	//strtok
+	
 }
 
+
+
+
+
+
+
+
+
+
+
+
+char *foundEnvVar;
+//Create a function that accepts (variable name,**env) then returns(the string, size).
+void findEnvVar(char* envVar,char **envp){
+	for(; *envp != 0; envp++)
+		if(strncmp(envVar, envp[0], strlen(envVar))==0){
+			//If it matches
+			//Use char* strchr(cs,c); and size_t()
+			//Go to =+1 and malloc the size -4 +1 //Use strtok for next function
+			char* equals=strchr(envp[0],'=');
+			equals++;
+			foundEnvVar=(char *)malloc(sizeof(char)*strlen(equals));
+			strcpy(foundEnvVar,equals);
+		}
+}
+/*
+void pwd(char **envp){
+	char* pwd ="PWD=";
+	for(; *envp != 0; envp++)
+		if(strncmp(pwd, envp[0], 4)==0)
+			for(i=4;envp[0][i]!=0;i++)
+				printf("%c",envp[0][i]);
+}
+*/
+
+
+
+int i=-1;
+int debug=0;//1 for development 0 for production
+
+char *prompt = "swish> ";
+char *osb="[";
+char *csb="]";
 
 //If "cd" then "HOME"
 //If "cd -" then "OLDPWD"
@@ -43,9 +72,10 @@ int main (int argc, char ** argv, char **envp) {
 	checkDebug(argc,argv);
 	printf("Debug = %d\n",debug);
 	int finished = 0;
-
-	char *prompt = "swish> ";
+	
 	char cmd[MAX_INPUT];
+
+	
 	
   	while(!finished){
     		char *cursor;
@@ -57,12 +87,16 @@ int main (int argc, char ** argv, char **envp) {
 		// Print the current directory
 		// "[/tmp] "
 		// "To inspect your environment variables use the printenv command"
-		pwd(envp);
 		
    		// Print the prompt
 		// "swish> "
-    		rv = write(1, prompt, strlen(prompt));
-    		
+
+	 	
+		findEnvVar("SSH_CONNECTION",envp);
+		printf("\n\n%s\n\n",foundEnvVar);
+		rv = printPrompt(envp);
+		fflush(NULL);			
+		
 		/*
 		pid = fork()
 		if(pid==0)
@@ -104,6 +138,24 @@ int main (int argc, char ** argv, char **envp) {
     		write(1, cmd, strnlen(cmd, MAX_INPUT));
   	}
   	return 0;
+}
+
+int printPrompt(char **envp){
+	write(1, osb, 1);
+	pwd(envp);
+	fflush(NULL);
+	write(1, csb, 1);
+    	return(write(1, prompt, strlen(prompt)));
+}
+
+// Go through and find PWD in **envp
+// Then print after = [4] to n
+void pwd(char **envp){
+	char* pwd ="PWD=";
+	for(; *envp != 0; envp++)
+		if(strncmp(pwd, envp[0], 4)==0)
+			for(i=4;envp[0][i]!=0;i++)
+				printf("%c",envp[0][i]);
 }
 
 void checkDebug(int argc, char** argv){
