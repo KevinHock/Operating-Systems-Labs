@@ -62,7 +62,7 @@ int qCd(char* cmd,char **envp){
 			findEnvVar("OLDPWD",envp);//Last dir
 			int result = chdir(foundEnvVar);
 			if(debug){
-				printf("result of changing dir is %d.\n",result);
+				fprintf(stderr, "result of changing dir is %d.\n",result);
 				fflush(NULL);
 			}
 			return(result);
@@ -111,17 +111,17 @@ void bin(char* var, char* progName){
 	}
 	int status;
 	pid = wait(&status);
-	printf("Parent process started.\n");
+	fprintf(stderr, "Parent process started.\n");
      	if (pid == -1)
  	   	perror("wait error");
      	else{                       /* Check status.                */
      		if(WIFSIGNALED(status) != 0)
-          		printf("Child proc ended. Signal = %d.\n",WTERMSIG(status));
+          		fprintf(stderr, "Child proc ended. Signal = %d.\n",WTERMSIG(status));
           	else if(WIFEXITED(status) != 0)
-              		printf("Child proc ended. Status = %d.\n",WEXITSTATUS(status));
+              		fprintf(stderr, "Child proc ended. Status = %d.\n",WEXITSTATUS(status));
           	else
-              		printf("Child proc got screwed up.\n");
-	}
+              		fprintf(stderr, "Child proc got screwed up.\n");
+		}
 }
 
 //Create a function that accepts (variable name,**env) then returns(the string, size).
@@ -158,7 +158,7 @@ char *csb="]";
 
 int main (int argc, char ** argv, char **envp) {
 	checkDebug(argc,argv);
-	printf("Debug = %d\n",debug);
+	fprintf(stderr, "Debug = %d\n",debug);
 	int finished = 0;
 	
 	char cmd[MAX_INPUT];
@@ -182,14 +182,14 @@ int main (int argc, char ** argv, char **envp) {
 	        	
 		findEnvVar("PATH",envp);
 		if(debug==1)
-			printf("\n\nAbout to look through %s.\n\n",foundEnvVar);
+			fprintf(stderr, "\n\nAbout to look through %s.\n\n",foundEnvVar);
 		//If built in I guess bin will do nothing.
 		bin(foundEnvVar,"ls");
 		
 		/*int cbiret = cbi("cd",envp);
 		if(debug==1)
 			if(cbiret<0)
-				printf("\n\ncbi failed.\n\n");
+				fprintf(stderr, "\n\ncbi failed.\n\n");
 		*/
 		rv = printPrompt(envp);
 		fflush(NULL);			
