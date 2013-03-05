@@ -71,7 +71,8 @@ int check4Env(char* cmd){
 		//malloc PATH
 		char* varName = malloc(sizeof(char)*(j-i));
 		strncpy(varName,cmd+i,(j-i));
-		printf("\nThe var name is = %s\n",varName);
+		if(debug)
+			fprintf(stderr,"\nThe var name is = %s\n",varName);
 		
 		//j=9 i=5
 		i=j;
@@ -102,8 +103,12 @@ int check4Env(char* cmd){
 		j++;
 		char* pathName = malloc(sizeof(char)*(j-i));
 		strncpy(pathName,cmd+i,(j-i));
-		printf("\nThe path name is %s\n",pathName);
-		//ghi setenv(varName,pathName,1);	
+		if(debug)
+			fprintf(stderr,"\nThe path name is %s\n",pathName);
+		//ghi setenv(varName,pathName,1);
+		if(debug)
+			
+		setenv(varName,pathName,1);
 		return(0);
 	}
   	if(strncmp("echo",cmd,4)==0 || strncmp("echo",cmd,4)==0){
@@ -113,8 +118,11 @@ int check4Env(char* cmd){
 		//cmd[j-1]==NULL
 		char* varName = malloc(sizeof(char)*(j-i));
 		strncpy(varName,cmd+i,(j-i));
-		printf("echo this:\"%s\"\n\n",varName);
-		
+		if(debug)
+			fprintf(stderr,"\n\necho'ing this:\"%s\"\n\n",varName);
+		char *e = getenv(varName);
+		printf("%s\n",e);
+		return(0);
 	}	
 	return(-1);//ghi
 }
