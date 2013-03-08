@@ -93,7 +93,7 @@ int main (int argc, char ** argv, char **envp) {
 
 
 
-int parseLine(char *cmd,char** envp){//lastghi
+int parseLine(char *cmd){
   char *cursor = cmd;
   char *first_command;
   char *args;
@@ -118,6 +118,7 @@ int parseLine(char *cmd,char** envp){//lastghi
 *check if built in, if it is then built in returns 1 and we don't pass to exec
  otherwise we loop through args add them to the array and then pass that to special exec
 
+
 *
 *
 *
@@ -126,25 +127,20 @@ int parseLine(char *cmd,char** envp){//lastghi
   // If the command is a single block of text, 
   // just execute it:
 //or check for specifics here except for $?
-//ghi
+
   if(blocks == 1){
-	if(!strcmp(cmd,"$?")){
-		//ret retVal
-	}
-	int builtIn=0;
-	builtIn = cbi(cmd,envp);//-1 if not built in
-	if(builtIn===-1){
-		if(!strcmp(cmd, EXIT_CMD)){
-		  killMe(0);
-		}else if(strcmp(cmd, CD_CMD))//ghi
-		  last_exit_code = executeCommand(cmd, "");
-		//all in here
-	}
+
+	if(!strcmp(cmd, EXIT_CMD)){
+	  killMe(0);
+    } else if(strcmp(cmd, CD_CMD))//ghi
+      last_exit_code = executeCommand(cmd, "");
+	//all in here
+
   // If the command is a single block of text with one argument,
   // just execute it:
   } else if(blocks == 2) {
 	cursor = cmd;
-	while(*cursor != ' ') cursor++;//?
+	while(*cursor != ' ') cursor++;//?{cursor++; ghi hello }
 	first_command = malloc(cursor-cmd);//cursor not at space
 	strncpy(first_command, cmd, (cursor-cmd));
 	//ghi print first_command see if 1 past space
@@ -247,10 +243,8 @@ int cbi(char* cmd,char **envp){
 	popEipVal = qPrintenv(cmd,envp);
 	if(popEipVal>=0)
 		return(0);
-	popEipVal=check4Env(cmd);
-	if(popEipVal>=0)
-		return(0);
 	return(-1);
+	//popEipVal = ;//after env variables	
 }
 void printEnvVars(char* cmd ,char** envp){
 	if(strcmp("printenv",cmd)==0)
@@ -313,7 +307,7 @@ int check4Env(char* cmd){
 	}
 	if(isEnv==0)
 		return(0);
-	printf("this far. line 311\n");//ghi
+	printf("this far. line 54\n");
 //Now that we've found $
 	//Check for Set
 	if(strncmp("SET",cmd,3)==0 || strncmp("set",cmd,3)==0){
