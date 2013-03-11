@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <fcntl.h>
 
 //Test fillArgs
 //int runLine(char* cmd);
@@ -12,175 +13,6 @@ int i=-1;
 int debug=1;
 int fd;
 
-
-int runWTF(char* cmd){
-	//i.e. "printenv --gdfgd 2"
-  //or    "/bin/ls"
-  //Make 2 of "printenv --gdfgd" go to output
-    int i=-1;
-    
-    int dirFlag=0;
-//IF executive contains a '/'
-//THEN dirFlag = 1
-    char currCh;
-    int lastSlash=-1;
-    int firstSpace=-1;
-    lastSlash=firstSpace=-1;
-    lastSlash=-1;
-    int stop=-1;
-    char* exename;
-    int numberOfSpaces=0;
-
-    for(i=0;i<strlen(cmd);i++){
-        if(cmd[i]=='/' && stop==0){
-            lastSlash=i;
-	    for(;;){}
-	}
-        if((cmd[i]==' '||cmd[i]=='\0')&& stop==0){
-            firstSpace=i;
-            stop=1;
-	}
-        if(cmd[i]==' '){
-	    numberOfSpaces++;
-        }
-    }
-    printf("num of spaces=%d\n",numberOfSpaces);
-    //if(numberOfSpaces!=0){
-//	numberOfSpaces--;
-  //  }
-    printf("wtf");
-    if(lastSlash==-1){
-        //Set dirFlag
-        dirFlag=0;
-    }else{
-         // 0123456789
-         //"/bin/ls -a"
-         //     lS fS
-         //     4  7
-        //printf("the strincmd[");
-	 
-        //Take from first space to last integer
-        exename=malloc(sizeof(char)*(firstSpace-lastSlash+1));
-
-	printf("firstSpace-lastSlash = %d\n",firstSpace-lastSlash);
-        //if(exename!=NULL){	
-	strncpy(exename,cmd[lastSlash],firstSpace-lastSlash);
-        //}
-        //Set dirFlag
-        dirFlag=1;
-    }
-    
-
-
-
-
-//Make array of args
-    //Get number of args              FOR NULL
-    //int numberOfArgs=numberOfSpaces+1+1;
-
-    
-    //"printenv --gdfgd"
-    //         \0
-    // 0123456789012345
-    
-    //Array for each offset of each space
-    int** nulls = malloc(sizeof(int)*numberOfSpaces);
-    if(nulls==NULL){
- 	while(1){}
-    }
-
-    int nullInd=0;
-    for(i=0;i<strlen(cmd);i++){
-        if((cmd[i]==' ')){
-            *(nulls+nullInd)=i;
-	    nullInd++;
-        }
-    }
-
-    printf("The first space is located at %d, should be at 8\n",*(nulls));
-    printf("The second space is located at %d, should be at 14\n",*(nulls+1));
-
-
-    //Make each space='\0'
-    int gg;
-    char tt;
-    char put='\0';
-    char* tempString = malloc(sizeof(char)*strlen(cmd)+1);
-    strcpy(tempString,cmd);
-    for(i=0;i<numberOfSpaces;i++){
-        //gg=*(nulls+i);
-        //tt=*(cmd+gg);
-        //(cmd+gg)='a';
-	gg=*(nulls+i);
-	tt=*(tempString+gg);
-        *(tempString+gg)=put;
-    }
-    
-    printf("The char is now '%x'.\n",*(tempString+gg));
-    //printf("The char is now '%c'.\n",*(cmd+gg));
-     
-    
-    //1
-    //for i=0 to spaces
-    //*(tempString+*(nulls+i))
-
-    //char** args = numberOfSpaces
-    
-    int** args = malloc(sizeof(int)*numberOfSpaces+2);//1 for NULL 1 for Zero-ith Arg
-    //Make arg point to each one of the *(tempString+*(nulls+(0 to <#ofSpace))
-    int counter;
-
-    //Make first point to beginning
-    *(args)=&*(tempString);
-    printf("*arg #0 is %s\n",*(args));
-
-    for(counter=0;counter<numberOfSpaces;counter++){
-   	gg=*(nulls+counter);
-	gg++;
-	//tempString+gg is char after null
-	*(args+counter+1)=&*(tempString+gg);
- 		
-	//THIS ONLY REPLACES CHAR ------ *(args+(counter+1))=*(tempString+gg+1);
-	printf("*arg #%d is %s\n",counter+1,*(args+counter+1));
-    }
-    //check numberOfArgs
-    
-     
-    //Make last point to NULL
-    *(args+numberOfSpaces+1)=NULL;
-    printf("*arg #%d is %s\n",numberOfSpaces+1,*(args+numberOfSpaces+1)); 
-    
-    
-    printf("\nstop here\n");
-    fflush(NULL);
-    //execvp(*(args),args);
-    
-    
-    /*
-    for(i=0;i<numberOfArguments;i++){
-	//Print out all argments
-	printf("");	
-    }
-    */
-
-/* 
-    //Fill in args with pointers to each word
-    //Should be loop
-    char* currArg;//=&args;
-    currArg=cmd;
-    //currArg=cmd[nullInd[0]+1];
-    
-    printf("1st arg is = %s\n",currArg);
-    fflush(NULL);
-*/
-    
-    
-    return(0);
-}
-
-
-
-
 int main(int argc, char ** argv, char **envp){
 	//printenv --gdfgd 2>err
 	char* cmd = "printenv --gdf gd";
@@ -188,27 +20,6 @@ int main(int argc, char ** argv, char **envp){
 	runWTF(cmd);
 	return(0);
 }
-
-
-//Wrap if last char is number
-//i.e. "printenv --gdfgd 2"
-//int result = runSingle(cmd);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*
 
 //Run Prototype:	
 int runLine(char* cmd){
@@ -346,7 +157,7 @@ int runLine(char* cmd){
 				 * 
 				 * 
 				 * 
-				 * *		
+				 * */		
 				
 			}else{
 				wait(NULL);
@@ -405,110 +216,6 @@ int runLine(char* cmd){
 	free(metaOS);
 	free(metaT);
 }
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -532,34 +239,5 @@ int run(char* cmd, int numOArgs){
 */
 
 
-/*
-//Fills argList with each command by splitting by ' '
-void fillArgs(char** argList, char* cmd, int numArgs){
-	int i=0;//Global i might be effected
-	//WATCH FOR DANGLING POINTERS
-	
-	char* currArg = &argList;
-	
-	for(strtok(cmd,' ')){
-		if(numArgs==i){
-			//if(currArg is a number)
-			//****dup entire function to the number**** somecommand 2>err.log
-		}
-		if contains '/'{
-			dirFlag=1;
-			dir = malloc(sizeof(char)*length(tok)+1);
-			strncpy(dir,tok,sizeof(char)*length(tok));
-		}else{
-			//Malloc length and put it in argList
-			currArg = malloc(sizeof(char)*length(tok)+1);
-			strncpy(currArg,tok,sizeof(char)*length(currArg));
-		}
-		currArg++;
-		i++;
-	}
-}
-*/
-
-//Test open("outfilePipes", O_WRONLY | O_CREAT, S_IRUSR | S_IWUSR);
 //Test fork setenv effecting parent some how
 

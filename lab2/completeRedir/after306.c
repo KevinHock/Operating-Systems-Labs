@@ -4,25 +4,80 @@
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <fcntl.h>
 
 int runSingle(char* cmd2);
 
 int main(int argc, char ** argv, char **envp){
+	char* cmd = "printenv --gdfgd";
+	/*char* file = "testingThisForFirstTimeEver";
+	//Open file
+	int fd = open(file, O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+    //CHECK FOR FAILURE
+  	if (fd < 0) {
+		//perror("Creating %s failed.\n",file);
+		exit(-1);
+	}*/
+/*	
+//Write to file
+	//Save stdout
+	int oldout = dup(1);
 	
+	//All output goes to fd.
+	dup2(fd,1);
+	
+	//Fork			
+	pid_t pid = fork();
+	//CHECK FOR FAILURE	
+	if (pid < 0) {					
+		perror("Fork failed.\n");			
+		exit(-1);			
+	}			
+	
+//The child's code
+	if(pid == 0){*/
+		int result = runSingle(cmd);
+		/*if(result==-1){
+			printf("Unfortunatly cmd failed to run.");
+		}
+		close(fd);		
+	}else{
+		wait(NULL);
+	}
+	//Close file
+	close(fd);
+	//Restore stdout
+	dup2(oldout, 1);
+	printf("\n\nI'm the parent.\n\n");*/
 //NOT WORKING
 	//char* cmd = "/bin/ls ";
 	//char* cmd = "/bin/ls *.o";
-	char* cmd = "printenv    --gdf gd";
-	
+	//char* cmd = "printenv --gdf gd";
 //WORKING
 	//char* cmd = "/bin/ls";
-	//char* cmd = "printenv --gdfgd 2";
+	//char* cmd = "printenv --gdfgd";
 	//char* cmd = "printenv    --gdf gd";
 	//char* cmd = "printenv --gdf gd";
-	printf("The command:%s\n",cmd);
-	runSingle(cmd);
+	//printf("The command:%s\n",cmd);
+	//runSingle(cmd);
 	return(0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int runSingle(char* cmd2){
 //i.e. "printenv --gdfgd 2"
@@ -96,48 +151,55 @@ int runSingle(char* cmd2){
         //1
         //Loop #1 End
     }
+    if(cmd[strlen(cmd)-1]==' '){
+	uniqueCount--;
+    }
     if(debug){
 		printf("uniqueCount=%d\n",uniqueCount);
-	}
+    }
     int** uniqueSpaceOffsets;
     //#2
     uniqueSpaceOffsets = malloc(sizeof(int)*uniqueCount);
     int i4uSO=0;
     int lastWasASpace=0;
+    
     for(i=0;i<strlen(cmd);i++){
-        if(debug){
-		printf("cmd[%d]=%c\n",i,cmd[i]);
-	}
+	/*if(debug){
+		printf("hey cmd[%d]=%c\n",i,cmd[i]);
+	}*/
 	if(cmd[i]!=' '&&lastWasASpace){
+	    printf("Making unique offset at space %d.\n",i-1);
             *(uniqueSpaceOffsets+i4uSO)=i-1; 
             i4uSO++;
         }
         if(cmd[i]==' '){
             lastWasASpace=1;
         }else{
-		lastWasASpace=0;
+	    lastWasASpace=0;
 	}
     }
     //#2 End
-    
+/****************************************************************/
+/****************************************************************/
     //Test Loop
     for(i=0;i<uniqueCount;i++){
         //Print each offset
-        printf("The %d-th offset is %d",i,uniqueSpaceOffsets[i]);
+        printf("The %d-th offset is %d\n",i,uniqueSpaceOffsets[i]);
     }
-
+/****************************************************************/
+/****************************************************************/
     
      
     if(debug){
-	printf("dirFlag=%d\n",dirFlag);
-	printf("lastSlash=%d\tfirstSpace=%d\n",lastSlash,firstSpace);
+		printf("dirFlag=%d\n",dirFlag);
+		printf("lastSlash=%d\tfirstSpace=%d\n",lastSlash,firstSpace);
     }
     
     //If there is a space in the program check if the last argument is a number B
     if(lastSpace!=-1){
-	char maybeNumber;
-	int i=1;
-	int charAsNum;
+		char maybeNumber;
+		int i=1;
+		int charAsNum;
         //Loop through lastSpace to ' ' or '\0
         while(1){
 	    //printf("ghi This infinite loop");
@@ -145,10 +207,10 @@ int runSingle(char* cmd2){
             maybeNumber=cmd[lastSpace+i];
             charAsNum=(int)maybeNumber;
 	    
-	    if(debug){
-	    	printf("The currChar is %x\ni is %d",maybeNumber,i);
-            	printf("charAsNum is %d\n",charAsNum);	
-	    }
+		    if(debug){
+		    	printf("The currChar is %x\ni is %d",maybeNumber,i);
+	            	printf("charAsNum is %d\n",charAsNum);	
+		    }
 
 	    //need to account for lower case
 
@@ -160,9 +222,10 @@ int runSingle(char* cmd2){
             }
             
             if(i>1&&charAsNum==0){//maybeNumber=='\0'&&i>1){
-		if(debug)
-			printf("We had to\n");
-                weHadTo=1;
+				if(debug){
+					printf("We had to\n");
+				}
+		        weHadTo=1;
                 
                 //Make lastSpace NULL
                 *(cmd+lastSpace)='\0';
@@ -214,8 +277,8 @@ int runSingle(char* cmd2){
     }
     if(debug){
         printf("AFTER WEHADTO\n");
-	printf("lastSlash=%d\tfirstSpace=%d\n",lastSlash,firstSpace);
-	printf("num of spaces=%d\n",numberOfSpaces);
+		printf("lastSlash=%d\tfirstSpace=%d\n",lastSlash,firstSpace);
+		printf("num of spaces=%d\n",numberOfSpaces);
     }
     if(!dirFlag){}
     else{
@@ -225,41 +288,40 @@ int runSingle(char* cmd2){
         //     4  7
         
 
-	// 0123456789
-        //"/bin/ls"
-        //     lS
-        //     4  
-	//fS = -1
-
-
-    //malloc for exename
-	int hmm4exe;
-	if(firstSpace==-1){
-	    	//We have no spaces
-		
-		//malloc strlen-lS
-		hmm4exe=strlen(cmd)-lastSlash;
-	}else{
-		//We have a space
-		
-		//malloc fS-lS
-		hmm4exe=firstSpace-lastSlash;
-	}
-        exename=malloc(sizeof(char)*hmm4exe+1);
-        
-	if(debug){
-		printf("\n***hmm4exe=%d***\n",hmm4exe);
-	}
+		// 0123456789
+	        //"/bin/ls"
+	        //     lS
+	        //     4  
+		//fS = -1
 	
-	printf("AFTER MALLOC\nfirstSpace=%d\tlastSlash=%d\thmm4exe= %d\n",firstSpace,lastSlash,hmm4exe);
-	strncpy(exename,(cmd+lastSlash+1),hmm4exe);
-	char als=*(cmd+lastSlash+1);
-	printf("\n\nals=%c\n\n\n",als);
-	fflush(NULL);
-    
 	
-	if(debug)
-            printf("Executable name is %s\n\n",exename);
+	    //malloc for exename
+		int hmm4exe;
+		if(firstSpace==-1){
+		    	//We have no spaces
+			
+			//malloc strlen-lS
+			hmm4exe=strlen(cmd)-lastSlash;
+		}else{
+			//We have a space
+			
+			//malloc fS-lS
+			hmm4exe=firstSpace-lastSlash;
+		}
+	        exename=malloc(sizeof(char)*hmm4exe+1);
+	        
+		if(debug){
+			printf("\n***hmm4exe=%d***\n",hmm4exe);
+		}
+		
+		printf("AFTER MALLOC\nfirstSpace=%d\tlastSlash=%d\thmm4exe= %d\n",firstSpace,lastSlash,hmm4exe);
+		strncpy(exename,(cmd+lastSlash+1),hmm4exe);
+		char als=*(cmd+lastSlash+1);
+		printf("\n\nals=%c\n\n\n",als);
+		fflush(NULL);
+	    
+		if(debug)
+	            printf("Executable name is %s\n\n",exename);
     }
 
     //Array for each offset of each space
@@ -268,61 +330,46 @@ int runSingle(char* cmd2){
 	    // 0123456789012345
     int** nulls;
     int gg;   
-if(numberOfSpaces!=0){
-    nulls = malloc(sizeof(int)*numberOfSpaces);
-    if(nulls==NULL){
-		perror("Mallocing nulls failed.\n");
-		exit(-1);
-    }
+	if(numberOfSpaces!=0){
+	    nulls = malloc(sizeof(int)*numberOfSpaces);
+	    if(nulls==NULL){
+			perror("Mallocing nulls failed.\n");
+			exit(-1);
+	    }
+	
+	    int nullInd=0;
+	    for(i=0;i<strlen(cmd);i++){
+	        if((cmd[i]==' ')){
+				printf("Putting %d into nulls\n",i);
+	            *(nulls+nullInd)=i;
+		        nullInd++;
+	        }
+	    }
+	
+	    printf("strlen of cmd is %d\ncmd is %s\n",strlen(cmd),cmd);
+	    //printf("The first space is located at %d, should be at 8\n",*(nulls));
+	    //printf("The second space is located at %d, should be at 14\n",*(nulls+1));
+	
+	
+	    //Make each space='\0'
+	    char put='\0';
+	    for(i=0;i<numberOfSpaces;i++){
+			gg=*(nulls+i);
+			printf("Making index %d null.\n\n\n",gg);
+	        *(cmd+gg)=put;
+	        printf("The char after just nulled out = '%x'.\n",*(cmd+gg+1));
+	    }
+	}else{
+		nulls = malloc(sizeof(int)*10);
+	}    
 
-    int nullInd=0;
-    for(i=0;i<strlen(cmd);i++){
-        if((cmd[i]==' ')){
-			printf("Putting %d into nulls\n",i);
-            *(nulls+nullInd)=i;
-	        nullInd++;
-        }
-    }
-
-    printf("strlen of cmd is %d\ncmd is %s\n",strlen(cmd),cmd);
-    //printf("The first space is located at %d, should be at 8\n",*(nulls));
-    //printf("The second space is located at %d, should be at 14\n",*(nulls+1));
-
-
-    //Make each space='\0'
-    char put='\0';
-    for(i=0;i<numberOfSpaces;i++){
-		gg=*(nulls+i);
-		printf("Making index %d null.\n\n\n",gg);
-        *(cmd+gg)=put;
-        printf("The char after just nulled out = '%x'.\n",*(cmd+gg+1));
-    }
-    /**/
-	gg=*(nulls);
-	printf("\n\ngg is %d.\n\n\n",gg);
-/**/
-}else{
-	nulls = malloc(sizeof(int)*10);
-	/**/
-	gg=*(nulls);
-	printf("\n\ngg is %d.\n\n\n",gg);
-/**/
-}    
-
-/**/
-	gg=*(nulls);
-	printf("\n\ngg is %d.\n\n\n",gg);
-/**/
 												//1 for NULL
 												//1 for the Zero-ith Arg
     int** args = malloc(sizeof(int)*numberOfSpaces+2);
 //Make args point to each one of the *(cmd+*(nulls+(0 to <#ofSpace))
     int counter;
 
-/**/
-	gg=*(nulls);
-	printf("\n\ngg is %d.\n\n\n",gg);
-/**/
+
     if(dirFlag){
         //Make first point to the exename
         *(args)=&*(exename);
@@ -334,12 +381,11 @@ if(numberOfSpaces!=0){
     if(debug){
         printf("*arg #0 is %s\n",*(args));
     }
-    
- /**/   
-    gg=*(nulls);
-	printf("\n\ngg is %d null.\n\n\n",gg);
-/**/		
-		
+    	
+    	
+/****************************************************************/
+/****************************************************************/
+/****************************************************************
     //Fill args 0 to n-1
     for(counter=0;counter<numberOfSpaces;counter++){
 	   	gg=*(nulls+counter);
@@ -350,6 +396,31 @@ if(numberOfSpaces!=0){
 		
 		printf("*arg #%d is %s\n",counter+1,*(args+counter+1));
     }
+***************************************************************/
+/****************************************************************/
+/****************************************************************/
+    //Fill args 1 to n-1
+    for(counter=0;counter<uniqueCount;counter++){
+		gg=uniqueSpaceOffsets[counter];
+		gg++;
+		printf("Filling in args where gg = %d\n\n\n",gg);
+		//cmd+gg is char after null
+		*(args+counter+1)=&*(cmd+gg);
+		
+		printf("*arg #%d is %s\n",counter+1,*(args+counter+1));
+    }
+   /***************************************************************/
+/****************************************************************
+    //Test Loop
+    for(i=0;i<uniqueCount;i++){
+        //Print each offset
+        printf("The %d-th offset is %d",i,uniqueSpaceOffsets[i]);
+    }
+****************************************************************/
+/****************************************************************/
+    
+    
+    
     
     //Make last point to NULL
     *(args+numberOfSpaces+1)=NULL;
