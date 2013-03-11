@@ -13,16 +13,16 @@ int debug=1;
 int fd;
 
 
-int runWTF(char* cmd){
+int runSingle(char* cmd){
 	//i.e. "printenv --gdfgd 2"
   //or    "/bin/ls"
   //Make 2 of "printenv --gdfgd" go to output
     int i=-1;
     
-    int dirFlag=0;
+/**/int dirFlag=0;
+    
 //IF executive contains a '/'
 //THEN dirFlag = 1
-    char currCh;
     int lastSlash=-1;
     int firstSpace=-1;
     lastSlash=firstSpace=-1;
@@ -45,10 +45,7 @@ int runWTF(char* cmd){
         }
     }
     printf("num of spaces=%d\n",numberOfSpaces);
-    //if(numberOfSpaces!=0){
-//	numberOfSpaces--;
-  //  }
-    printf("wtf");
+
     if(lastSlash==-1){
         //Set dirFlag
         dirFlag=0;
@@ -62,10 +59,11 @@ int runWTF(char* cmd){
         //Take from first space to last integer
         exename=malloc(sizeof(char)*(firstSpace-lastSlash+1));
 
-	printf("firstSpace-lastSlash = %d\n",firstSpace-lastSlash);
+		printf("firstSpace-lastSlash = %d\n",firstSpace-lastSlash);
         //if(exename!=NULL){	
-	strncpy(exename,cmd[lastSlash],firstSpace-lastSlash);
+		strncpy(exename,cmd[lastSlash],firstSpace-lastSlash);
         //}
+        
         //Set dirFlag
         dirFlag=1;
     }
@@ -76,17 +74,17 @@ int runWTF(char* cmd){
 
 //Make array of args
     //Get number of args              FOR NULL
-    int numberOfArgs=numberOfSpaces+1+1;
-    char** args = malloc(sizeof(int)*numberOfArgs);
+    //int numberOfArgs=numberOfSpaces+1+1;
     
-    //"printenv --gdfgd"
-    //         \0
-    // 0123456789012345
     
     //Array for each offset of each space
+	    //"printenv --gdfgd"
+	    //         \0
+	    // 0123456789012345
     int** nulls = malloc(sizeof(int)*numberOfSpaces);
     if(nulls==NULL){
- 	while(1){}
+		perror("Mallocing nulls failed.\n");
+		exit(-1);
     }
 
     int nullInd=0;
@@ -103,41 +101,50 @@ int runWTF(char* cmd){
 
     //Make each space='\0'
     int gg;
-    char tt;
     char put='\0';
     char* tempString = malloc(sizeof(char)*strlen(cmd)+1);
     strcpy(tempString,cmd);
     for(i=0;i<numberOfSpaces;i++){
-        //gg=*(nulls+i);
-        //tt=*(cmd+gg);
-        //(cmd+gg)='a';
-	gg=*(nulls+i);
-	tt=*(tempString+gg);
+		gg=*(nulls+i);
         *(tempString+gg)=put;
     }
     
     printf("The char is now '%x'.\n",*(tempString+gg));
-    //printf("The char is now '%c'.\n",*(cmd+gg));
     
     
-    //printf("The char is now '%c'.\n",tt);
-    
-    //1
-    //for i=0 to spaces
-    //*(tempString+*(nulls+i))
+												//1 for NULL
+												//1 for the Zero-ith Arg
+    int** args = malloc(sizeof(int)*numberOfSpaces+2);
+//Make args point to each one of the *(tempString+*(nulls+(0 to <#ofSpace))
+    int counter;
 
-    //char** args = numberOfSpaces
+
+
+/**///if not dirFlag
+ 
+    //Make first point to beginning
+    *(args)=&*(tempString);
+    printf("*arg #0 is %s\n",*(args));
+
+    //Fill args 0 to n-1
+    for(counter=0;counter<numberOfSpaces;counter++){
+	   	gg=*(nulls+counter);
+		gg++;
+		//tempString+gg is char after null
+		*(args+counter+1)=&*(tempString+gg);
+		
+		printf("*arg #%d is %s\n",counter+1,*(args+counter+1));
+    }
     
-/* 
-    //Fill in args with pointers to each word
-    //Should be loop
-    char* currArg;//=&args;
-    currArg=cmd;
-    //currArg=cmd[nullInd[0]+1];
+    //Make last point to NULL
+    *(args+numberOfSpaces+1)=NULL;
+    printf("*arg #%d is %s\n",numberOfSpaces+1,*(args+numberOfSpaces+1)); 
     
-    printf("1st arg is = %s\n",currArg);
+    
+    printf("\nstop here\n");
     fflush(NULL);
-*/
+    //execvp(*(args),args);
+    
     
     
     return(0);
@@ -149,7 +156,8 @@ int runWTF(char* cmd){
 int main(int argc, char ** argv, char **envp){
 	//printenv --gdfgd 2>err
 	char* cmd = "printenv --gdf gd";
-	runWTF(cmd);
+	printf("The command:%s\n",cmd);
+	runSingle(cmd);
 	return(0);
 }
 
@@ -173,7 +181,6 @@ int main(int argc, char ** argv, char **envp){
 
 
 /*
-
 //Run Prototype:	
 int runLine(char* cmd){
 	int hmm;	
@@ -370,111 +377,6 @@ int runLine(char* cmd){
 	free(metaT);
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 //Test run()
 
