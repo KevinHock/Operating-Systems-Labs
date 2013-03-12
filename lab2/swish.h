@@ -68,6 +68,9 @@ char *historyForward();
 void historyClear();
 void historyPrint();
 
+//Signature Wolfie Function:
+void wolfiePrint();
+
 
 /*************************************
  * Constants                         *
@@ -81,7 +84,7 @@ const char *CD_CMD = "cd";
 const char *CLEAR_CMD = "clear";
 const char *HISTORY_CMD = "history";
 const char *HISTORY_FILENAME = "/.swishtory";
-
+const char *WOLFIE_CMD = "wolfie";
 
 /*************************************
  * Global Variables                  *

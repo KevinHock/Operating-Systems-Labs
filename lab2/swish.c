@@ -207,6 +207,67 @@ void historyPrint(){
   }
 }
 
+/**********************************************************************
+ * void wolfiePrint()                                                *
+ * ----------------------------------------------                    *
+ * Print the signature wolfie.             		                     *
+ *********************************************************************/
+void wolfiePrint(){
+  printf("					$I7$I7$IO$$ZZ$$\n");
+  printf("				  +  ?+II?+I?I+7I7+777$ ?\n");
+  printf("			      II?=.  ,==7???+II7$II7    II?Z\n");
+  printf("			     8OI77Z8  IOO?+?+?I$77$7Z  OO$$7Z\n");
+  printf("			    +DZ7$7O$8  O:,I++??IIZO8   FDZ$OO88\n");
+  printf("			     D8D  ZOIO ~+++7?II??88Z  8OOD  8?I\n");
+  printf("		           INDDODZ8O ZOZ+?7I7?=$ZO8  DO8ZDDNNII \n");
+  printf("			    ?ZDZD+7Z O8.?O?7$+?$IZOOD 88888D8FR\n");
+  printf("			      $8Z   ZOZ$7=?+?+?7$IZODO   D8 \n");
+  printf("			     ??ZZO$I$77,7+I++7??$$I8ODD8$O88$ \n");
+  printf("			    7?ZZ8Z$7+:~7+II+?$+?I?ZZ7Z8IZ7Z$Z7 \n");
+  printf("	      		  $II=$I??7.$=I+?III??+7I7?7ZZ$Z$$8OO$$ \n");
+  printf("           		  I??ZI=+7IO.I?.I7I$II$7?7$IZZ8Z8ZZOZZ$$7 \n");
+  printf("			 ?Z+I+ZI=7:$,7=II?$II=II77I778O8O8OIOOZ$$ \n");
+  printf("		      =7ZZIZ$7=7777?O$OZ88ZOOO$$I$OZ8OZ8$DO$ZOZZZ \n");
+  printf("		      Z$O?7$ZZI$7$8O$Z$Z$ZOZZ$$OOZDO$8OO8OZ8Z7$$OZ$ \n");
+  printf("		     ZZOZ$O$7$$OOZZ887  ZD8$  8DOOOO888OO8O$88$7ZZ$ \n");
+  printf("		    ?I+$8O+IO78OOO$O8   8OOZ  ZO8OII$8NN8OZOZOOO7Z$Z \n");
+  printf("		   =+?ZOZI$8OZ8N+  DD   D8NM  D8NN?  DDMDDD8OOO8ZOOZ \n");
+  printf("		 $7$OOD~7ZIZ8O8D  MDND:,8DDNN DDDDN  DNNNDD888O88OOZZZ \n");
+  printf("		$7?ZODIZ$$$$888O .DMMNNDD8D88DNNNMD  O88ODDDOD88$D8OOZOO \n");
+  printf("	     IO8+$O$7ZZZZ$$ZZ8MNMMMMMMN8DDDDDNMMMMMMDN8DNNDNN88Z$Z8O88ZZ \n");
+  printf("	   ++I$O?OZ$8O77$ZZ8NMMMMMMMMMMNNDDNMNMMMNMMMMMMNND8DOOZOZZOOZO7$ \n");
+  printf("	  ???7$$7+7OO8OZ8OMNMNNMMMNNNDDMNDNNDDDDDDDNNNNNNDD88O8D8OOOZOZ77 \n");
+  printf("	  =~II+$IZOODDDNDO7Z7$N,~ D8DD8D8D88OO888:   DDOZ8ONND$DD888O$OZ$ \n");
+  printf("	 ~$:?:?7ZO8DDDNIOI7I$?I?~  7 ??8ZO$,   7?~  $ZZ7Z$OONNDD8DNDDOZ$Z \n");
+  printf("	 ~?7I77I$8NDOO7??$I$$Z,Z   ++~  7I$ +    +=$7ZZZODOOZ8OZO8D8OOO$Z \n");
+  printf("	  +~?I$$IZ$$:=7$=+Z.888~I+++++     $    +I~=Z$Z8Z77$8ZOOZOO8OZ \n");
+  printf("	    ?$7777$?$$$8:8ZZ$$..=++?+$ . :$+   ID=7ZZO8DDOO8DD8DO8DD \n");
+  printf("		$ZIO$ZZI8Z788OO$7I$I~77,7+II7Z OD8Z8O88O8DNDDNNNND88D \n");
+  printf("		 7$=ZZZO88O8DDZ8Z$$I7I$I7I+$DDZOOOD8D88DNNMNNNMDDOOD \n");
+  printf("	  	   $IZZZONDNNOO8D8ZOZ8NDDNNDN8DD$8NN8NOODNNDD8DODN \n");
+  printf("	 		 $Z$ZZ8DDOD8N88ODNNDNNDDDN8NDDNMODDDDDDDN \n");
+  printf("				O8$ODO8NDNMNNNNNDN8D8MDNDNDNNDND \n");
+  printf("\n");
+  printf("                   .__    _____      ____    ____  __\n");
+  printf("                  /  \\    /  \\ ____  |  | _/ ____\\|__|  ____  \n");
+  printf("                  \\   \\/\\/   //  _ \\ |  | \\   __\\ |  |_/ __ \\ \n");
+  printf("                   \\        /(  <_> )|  |__|  |   |  |\\  ___/ \n");
+  printf("                    \\__/\\  /  \\____/ |____/|__|   |__| \\___  >\n");
+  printf("                         \\/                                \\/ \n");
+  printf("                      _________.__             .__   .__   \n");
+  printf("                     /   _____/|  |__    ____  |  |  |  |  \n");
+  printf("                     \\_____  \\ |  |  \\ _/ __ \\ |  |  |  |  \n");
+  printf("                     /        \\|   Y  \\\\  ___/ |  |__|  |__\n");
+  printf("                    /_______  /|___|  / \\___  >|____/|____/\n");
+  printf("                            \\/      \\/      \\/             \n");
+  printf("\n");   
+}
+
+
+
+
+
+
 
 
 /**********************************************************************
@@ -308,6 +369,9 @@ int executeCommand(process_list *pa){
   } else if(!strcmp(proc->args[0], HISTORY_CMD)){
     historyPrint();
     return 0;
+  } else if(!strcmp(proc->args[0], WOLFIE_CMD)){
+	  wolfiePrint();
+	  return 0;  
   } else {
   
     
