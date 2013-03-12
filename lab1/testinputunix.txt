@@ -1,0 +1,10 @@
+This
+is
+a
+UNIX
+file
+and 
+it's
+being
+reversed
+fine.
