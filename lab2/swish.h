@@ -71,20 +71,21 @@ void historyPrint();
 //Signature Wolfie Function:
 void wolfiePrint();
 
-
 /*************************************
  * Constants                         *
  ************************************/
 #define MAX_INPUT 1024
 #define MAX_DIR_LENGTH 255
-const char DEBUG_FLAG = 'd';
-const char TIMED_FLAG = 't';
 const char *EXIT_CMD = "exit";
 const char *CD_CMD = "cd";
 const char *CLEAR_CMD = "clear";
+const char *ECHO_CMD = "echo";
 const char *HISTORY_CMD = "history";
-const char *HISTORY_FILENAME = "/.swishtory";
+const char *SET_CMD = "set";
 const char *WOLFIE_CMD = "wolfie";
+const char *HISTORY_FILENAME = "/.swishtory";
+const char DEBUG_FLAG = 'd';
+const char TIMED_FLAG = 't';
 
 /*************************************
  * Global Variables                  *

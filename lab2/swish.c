@@ -1,10 +1,10 @@
 /* CSE 306: Sea Wolves Interactive SHell 
  * 
- * TODO: Implement 'set' command for adding variables,
- * TODO: Implement more than one argument
- * TODO: Implement piping, redirecting, etc
- * TODO: Implement scripting support (just need to read the lines of the file)
- * TODO: Implement job control
+ * TODO: Look at proc-args to see if not checking for null
+ * TODO: Test set and echo more 
+ * TODO: -? if built in command
+ * TODO: Custom FD "printenv --gdfgd 2>errlog"
+ * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
  */
 
 #include "swish.h"
@@ -268,8 +268,6 @@ void wolfiePrint(){
 
 
 
-
-
 /**********************************************************************
  * int parseLine(char *cmd)                                           *
  * ----------------------------------------------                     *
@@ -311,9 +309,15 @@ int parseLine(char *cmd){
     addProcessToList(p, proc_list);	
     cmd_blocks = strtok(NULL, "|");
   }
-  
-  if(proc_list->num_processes > 0)
-    executeCommand(proc_list);
+  //ghi
+  int letsSee;
+  char str[15];
+  if(proc_list->num_processes > 0){
+    letsSee=executeCommand(proc_list);
+    sprintf(str, "%d", letsSee);
+    setenv("?",str,1);
+  }
+  if(debug) printf("? is set to %d\n",letsSee);
   return result;
 }
 
@@ -333,47 +337,67 @@ int executeCommand(process_list *pa){
  
   // Handle Built-In Commands!
   if(!strcmp(proc->args[0], EXIT_CMD)){
-	killMe(0);
+	  killMe(0);
     return 0;   
   } 
   
   else if(!strcmp(proc->args[0], CD_CMD)){
     char *olddir = malloc(strlen(dir + 1));
     strcpy(olddir, dir);
-    
-	if(proc->args[1] == NULL){
-	  chdir(home_dir);
-	  if(strcmp(olddir, home_dir))
- 	    setenv("OLDPWD", olddir, 1);
-	  free(olddir);
-	  return 0;
-	} else if(!strcmp(proc->args[1], "-")) {
-	  chdir(resolveVar("OLDPWD")); 
-	  setenv("OLDPWD", olddir, 1);
-	  free(olddir);
-	  return 0;
-	} else if(chdir(proc->args[1])) {
-	  printf("Directory Not Found [%s]\n", proc->args[1]);
-      return 1;
-	} else {
-	  if(strcmp(olddir, proc->args[1]))
- 	    setenv("OLDPWD", olddir, 1);
-	  free(olddir);
-	  return 0;
-    }
-    
+    if(proc->args[1] == NULL){
+       chdir(home_dir);
+       if(strcmp(olddir, home_dir))
+        setenv("OLDPWD", olddir, 1);
+       free(olddir);
+       return 0;
+    } else if(!strcmp(proc->args[1], "-")) {
+       chdir(resolveVar("OLDPWD")); 
+       setenv("OLDPWD", olddir, 1);
+       free(olddir);
+       return 0;
+    } else if(chdir(proc->args[1])) {
+      printf("Directory Not Found [%s]\n", proc->args[1]);
+        return 1;
+    } else {
+      if(strcmp(olddir, proc->args[1]))
+        setenv("OLDPWD", olddir, 1);
+      free(olddir);
+      return 0;
+      }
   } else if(!strcmp(proc->args[0], CLEAR_CMD)){
-    historyClear();  
-    return 0;
-    
+      historyClear();  
+      return 0;
+  } else if(!strcmp(proc->args[0], ECHO_CMD)){
+      int i=1;
+      while(proc->args[i]!=NULL){
+        //Had to hard code against printing $IDONTEXIST
+        if(proc->args[i][0]!='$')printf("%s ",proc->args[i]);
+        i++;
+      }
+      printf("\n");
+      return(0);
   } else if(!strcmp(proc->args[0], HISTORY_CMD)){
-    historyPrint();
-    return 0;
+      historyPrint();
+      return 0;
+  } else if(!strcmp(proc->args[0], SET_CMD)){
+      int i=0;
+      while(proc->args[i++]!=NULL){}
+      if(i>4){
+        if(!strcmp(proc->args[2], "=")){
+          setenv(proc->args[1],proc->args[3],1);
+          return 0;
+        } else{
+          printf("Improper use of arguments.\n");
+          return -1;
+        }
+      }else{
+        printf("Not enough arguments to set\n");
+        return -1;
+      }
   } else if(!strcmp(proc->args[0], WOLFIE_CMD)){
-	  wolfiePrint();
-	  return 0;  
+	    wolfiePrint();
+	    return 0;  
   } else {
-  
     
     // Fork and execute the command:
     pid = fork();
@@ -391,7 +415,6 @@ int executeCommand(process_list *pa){
 	  if(proc->in_file_handle >= 0){
 	    dup2(proc->in_file_handle, 0);
 	  }
-
       proc->exit_code = execvp(proc->args[0], proc->args);
       printf("Command [%s] was not found.\n", proc->args[0]);
       killMe(proc->exit_code);
@@ -399,7 +422,13 @@ int executeCommand(process_list *pa){
 
 	  // Wait for the child and store the exit code:
       waitpid(pid, &exit_code, 0);
-      
+      //ghi
+      /*char str[15];
+      sprintf(str, "%d", exit_code);
+      if(debug) printf("Going to set ? to %s\n",str);
+      setenv("?",str,1);
+      */ 
+      //ghi
     }
   }
 
@@ -437,7 +466,7 @@ void runScript(char *input){
   	      cursor++;
 	    } 
         
-        if(strlen(line) > 0 && *line != '#'){
+      if(strlen(line) > 0 && *line != '#'){
           if(debug) printf("Executing [%s]\n", line); 
           parseLine(line);
 	    } 
@@ -487,18 +516,23 @@ int addProcessToList(process *p, process_list *pl){
 
 
 char **buildArgs(char *in){
-  char **result = NULL;
+  char **result = NULL;//ghi Danglin pointer man
   char *tok = strtok(in, " ");
   int elements = 0;
     
   while(tok){
- 	elements++;
-	result = realloc(result, sizeof(char *) * elements);
+ 	  elements++;
+	  result = realloc(result, sizeof(char *) * elements);
 	
-	if(result == NULL) return NULL;
+	  if(result == NULL) return NULL;
 	
-	result[elements - 1] = tok;
-	tok = strtok(NULL, " ");
+    //Make arg point to tok if it isn't an environmental variable
+    if(!strncmp(tok,"$",1) && getenv(tok+1)!=NULL){
+      result[elements-1] = getenv(tok+1);
+    }else result[elements - 1] = tok;
+    
+    //On to the next one
+	  tok = strtok(NULL, " ");
   }
   
   result = realloc(result, sizeof(char *) * (elements + 1));
