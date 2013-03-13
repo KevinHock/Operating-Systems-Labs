@@ -415,8 +415,6 @@ int executeCommand(process_list *pa){
       proc->exit_code = execvp(proc->args[0], proc->args);
       printf("Command [%s] was not found.\n", proc->args[0]);
       if(flag){
-        //startx
-        //ghiz
         //Close file
         close(filenumber);
         //Restore
@@ -607,11 +605,6 @@ int parseCommand(process *p, char *cmd){
   	    file = trim(file);
       } else return 1;
 
-/*
-	p->in_file_handle = open(file, O_RDONLY);
-    if(p->in_file_handle < 0)
-      return 1;
-*/
       custom=0;
       filenumber = open(file, O_RDONLY);
       old = dup(custom);
@@ -619,42 +612,7 @@ int parseCommand(process *p, char *cmd){
       dup2(filenumber,custom);
       flag=1;
       return 0;
-/*
-  char* cmd = "printenv --gdfgd 2";
-	int fd = open("supyouZZ", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-	//Save stdout
-	int old = dup(custom);
-	//All output goes to fd
-	dup2(fd,custom);
-	//Fork			
-	pid_t pid = fork();
-	if(pid == 0){
-		runSingle(cmd);
-		close(fd);		
-	}else{
-		wait(NULL);
-	}
-	//Close file
-	close(fd);
-	//Restore
-	dup2(old, custom);
-	return(0);
-*/
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+      
   // HANDLE A SINGLE OUTPUT REDIRECT
   // COMMAND INTO FILE
   } else if(countIn('<', cmd) == 0 && countIn('>', cmd) == 1){
@@ -670,7 +628,6 @@ int parseCommand(process *p, char *cmd){
 	  junk++;
 	  fd = atoi(junk);
 	  printf("CUSTOM FD is %d\n",fd);
-    //ghiz
 	  if(debug) printf("Redirecting from FD %d\n", fd);
     custom=fd;
 	}
@@ -689,35 +646,12 @@ int parseCommand(process *p, char *cmd){
   } else return 1;
 
   filenumber = open(file, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-  //ghiz
   //Save
 	old = dup(custom);
   //All output goes to file
   dup2(filenumber,custom);
   flag=1;
 	return(0);
-  
-/*
-  char* cmd = "printenv --gdfgd 2";
-	int fd = open("supyouZZ", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-	//Save stdout
-	int old = dup(custom);
-	//All output goes to fd
-	dup2(fd,custom);
-	//Fork			
-	pid_t pid = fork();
-	if(pid == 0){
-		runSingle(cmd);
-		close(fd);		
-	}else{
-		wait(NULL);
-	}
-	//Close file
-	close(fd);
-	//Restore
-	dup2(old, custom);
-	return(0);
-*/
   } else if(countIn('<', cmd) == 1 || countIn('>', cmd) == 1){
     return 2;
   }
