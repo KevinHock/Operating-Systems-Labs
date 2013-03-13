@@ -1,5 +1,6 @@
 /* CSE 306: Sea Wolves Interactive SHell 
- * TODO: Custom FD "printenv --gdfgd 2>errlog"
+ * TODO: Custom FD "printenv --gdfgd 2<errlog"
+ * TODO: Add a few if this is negative something failed'z
  * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
  */
 
@@ -414,10 +415,13 @@ int executeCommand(process_list *pa){
       proc->exit_code = execvp(proc->args[0], proc->args);
       printf("Command [%s] was not found.\n", proc->args[0]);
       if(flag){
+        //startx
+        //ghiz
         //Close file
         close(filenumber);
         //Restore
         dup2(old, custom);
+        flag=0;
       }
       killMe(proc->exit_code);
     } else {
@@ -431,10 +435,12 @@ int executeCommand(process_list *pa){
       setenv("?",str,1);
       */ 
       if(flag){
+        //ghiz
         //Close file
         close(filenumber);
         //Restore
         dup2(old, custom);
+        flag=0;
       }
       //ghi
     }
@@ -590,82 +596,29 @@ int parseCommand(process *p, char *cmd){
 	
 
   // HANDLE A SINGLE INPUT REDIRECT
+  // FILE INTO COMMAND startx
   } else if(countIn('<', cmd) == 1 && countIn('>', cmd) == 0){
-	args = strtok(cmd, "<");
-	file = strtok(NULL, "<");
-	
-	p->args = buildArgs(args);
+	    args = strtok(cmd, "<");
+	    file = strtok(NULL, "<");
 
-	if(file != NULL){
-  	  file = trim(file);
-    } else return 1;
-	
+	    p->args = buildArgs(args);
+
+	    if(file != NULL){
+  	    file = trim(file);
+      } else return 1;
+
+/*
 	p->in_file_handle = open(file, O_RDONLY);
     if(p->in_file_handle < 0)
       return 1;
-        
-
-  // HANDLE A SINGLE OUTPUT REDIRECT
-  } else if(countIn('<', cmd) == 0 && countIn('>', cmd) == 1){
-	args = strtok(cmd, ">");
-	file = strtok(NULL, ">");
-	
-	junk = args;
-	while(*junk != 0) junk ++;
-	while(*junk != ' ' && junk != args) junk--;
-	
-	if(junk != args){
-	  *junk = '\0';
-	  junk++;
-	  fd = atoi(junk);
-	  printf("FD is %d\nFD is %d\nFD is %d\n",fd,fd,fd);
-	  if(debug) printf("Redirecting from FD %d\n", fd);
-    custom=fd;
-	  /*p->in_file_handle = fcntl(fd, F_DUPFD, 5);
-      if(p->in_file_handle < 0)
-		return 3;
-	  if(debug) printf("Dup'ed to %d\n", p->in_file_handle);
-    */
-	}
-	
-	p->args = buildArgs(args);
-
-  int jck=0;
-  while(p->args[jck]!=NULL){
-    printf("args[%d] =\t%s\n",jck,p->args[jck]);
-    jck++;
-  }
-  
-	if(file != NULL){
-  	  file = trim(file);
-      printf("FILE is %s\n",file);
-  } else return 1;
-	
-  /*
-	p->out_file_handle = open(file, O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
-  if(p->out_file_handle < 0) return 1;    
-	*/
-
-  filenumber = open(file, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-  //Save
-	old = dup(custom);
-  //All output goes to file
-  dup2(filenumber,custom);
-  flag=1;
-  //Fork			
-	/*pid_t pid = fork();
-	if(pid == 0){
-		parseLine(p);
-		close(filenumber);		
-	}else{
-		wait(NULL);
-	}
-	//Close file
-	close(filenumber);
-	//Restore
-	dup2(old, custom);*/
-	return(0);
-  
+*/
+      custom=0;
+      filenumber = open(file, O_RDONLY);
+      old = dup(custom);
+      //All input goes to fd
+      dup2(filenumber,custom);
+      flag=1;
+      return 0;
 /*
   char* cmd = "printenv --gdfgd 2";
 	int fd = open("supyouZZ", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
@@ -693,6 +646,78 @@ int parseCommand(process *p, char *cmd){
 
 
 
+
+
+
+
+
+
+
+
+
+  // HANDLE A SINGLE OUTPUT REDIRECT
+  // COMMAND INTO FILE
+  } else if(countIn('<', cmd) == 0 && countIn('>', cmd) == 1){
+	args = strtok(cmd, ">");
+	file = strtok(NULL, ">");
+	
+	junk = args;
+	while(*junk != 0) junk ++;
+	while(*junk != ' ' && junk != args) junk--;
+	
+	if(junk != args){
+	  *junk = '\0';
+	  junk++;
+	  fd = atoi(junk);
+	  printf("CUSTOM FD is %d\n",fd);
+    //ghiz
+	  if(debug) printf("Redirecting from FD %d\n", fd);
+    custom=fd;
+	}
+	
+	p->args = buildArgs(args);
+
+  int jck=0;
+  while(p->args[jck]!=NULL){
+    printf("args[%d] =\t%s\n",jck,p->args[jck]);
+    jck++;
+  }
+  
+	if(file != NULL){
+  	  file = trim(file);
+      printf("FILE is %s\n",file);
+  } else return 1;
+
+  filenumber = open(file, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+  //ghiz
+  //Save
+	old = dup(custom);
+  //All output goes to file
+  dup2(filenumber,custom);
+  flag=1;
+	return(0);
+  
+/*
+  char* cmd = "printenv --gdfgd 2";
+	int fd = open("supyouZZ", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+	//Save stdout
+	int old = dup(custom);
+	//All output goes to fd
+	dup2(fd,custom);
+	//Fork			
+	pid_t pid = fork();
+	if(pid == 0){
+		runSingle(cmd);
+		close(fd);		
+	}else{
+		wait(NULL);
+	}
+	//Close file
+	close(fd);
+	//Restore
+	dup2(old, custom);
+	return(0);
+*/
   } else if(countIn('<', cmd) == 1 || countIn('>', cmd) == 1){
     return 2;
   }
