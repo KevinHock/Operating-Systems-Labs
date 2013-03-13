@@ -1,8 +1,4 @@
 /* CSE 306: Sea Wolves Interactive SHell 
- * 
- * TODO: Look at proc-args to see if not checking for null
- * TODO: Test set and echo more 
- * TODO: -? if built in command
  * TODO: Custom FD "printenv --gdfgd 2>errlog"
  * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
  */
@@ -290,11 +286,11 @@ int parseLine(char *cmd){
   cmd_blocks = strtok(cmd, "|");  
   while(cmd_blocks){	
     process *p = malloc(sizeof(process));
-	result = parseCommand(p, cmd_blocks);
+	  result = parseCommand(p, cmd_blocks);
 	
-	if(result == 1){
-	  printf("Sorry, I failed to open that file.\n");
-	  return 1;
+	  if(result == 1){
+	    printf("Sorry, I failed to open that file.\n");
+	    return 1;
     } else if (result == 2){
       printf("Sorry, I dont know how to handle that command.\n");
       return 2;
@@ -302,7 +298,7 @@ int parseLine(char *cmd){
       printf("That is not a valid file descriptor.\n");
       return 3;
     } else {
-	  if(debug)
+      if(debug)
   	    printf("Added %s to the process list.\n", p->args[0]);
     }
     
@@ -311,7 +307,7 @@ int parseLine(char *cmd){
   }
   //ghi
   int letsSee;
-  char str[15];
+  char str[22];
   if(proc_list->num_processes > 0){
     letsSee=executeCommand(proc_list);
     sprintf(str, "%d", letsSee);
@@ -407,16 +403,22 @@ int executeCommand(process_list *pa){
 	    printf("[DEBUG] Replacing STDOUT with FD %d \n", proc->out_file_handle);
         printf("[DEBUG] Replacing STDIN with FD %d \n", proc->in_file_handle);
       }
-      
+      /*
       if(proc->out_file_handle >= 0){
-	    dup2(proc->out_file_handle, 1);
-	  }
-
+	    dup2(proc->out_file_handle, 1);*/
+	  //}
+/*
 	  if(proc->in_file_handle >= 0){
 	    dup2(proc->in_file_handle, 0);
-	  }
+	  }*/
       proc->exit_code = execvp(proc->args[0], proc->args);
       printf("Command [%s] was not found.\n", proc->args[0]);
+      if(flag){
+        //Close file
+        close(filenumber);
+        //Restore
+        dup2(old, custom);
+      }
       killMe(proc->exit_code);
     } else {
 
@@ -428,6 +430,12 @@ int executeCommand(process_list *pa){
       if(debug) printf("Going to set ? to %s\n",str);
       setenv("?",str,1);
       */ 
+      if(flag){
+        //Close file
+        close(filenumber);
+        //Restore
+        dup2(old, custom);
+      }
       //ghi
     }
   }
@@ -547,7 +555,6 @@ int parseCommand(process *p, char *cmd){
   p->out_file_handle = -1;
   char *args, *file, *junk;
   int fd;
-
   // DISABLE MULTIPLE INPUT REDIRECTS
   if(countIn('<', cmd) > 1){
     return 2;
@@ -611,25 +618,80 @@ int parseCommand(process *p, char *cmd){
 	  *junk = '\0';
 	  junk++;
 	  fd = atoi(junk);
-	  
+	  printf("FD is %d\nFD is %d\nFD is %d\n",fd,fd,fd);
 	  if(debug) printf("Redirecting from FD %d\n", fd);
-
-	  p->in_file_handle = fcntl(fd, F_DUPFD, 5);
+    custom=fd;
+	  /*p->in_file_handle = fcntl(fd, F_DUPFD, 5);
       if(p->in_file_handle < 0)
-		return 3; 
-
+		return 3;
 	  if(debug) printf("Dup'ed to %d\n", p->in_file_handle);
+    */
 	}
 	
 	p->args = buildArgs(args);
 
+  int jck=0;
+  while(p->args[jck]!=NULL){
+    printf("args[%d] =\t%s\n",jck,p->args[jck]);
+    jck++;
+  }
+  
 	if(file != NULL){
   	  file = trim(file);
-    } else return 1;
+      printf("FILE is %s\n",file);
+  } else return 1;
 	
+  /*
 	p->out_file_handle = open(file, O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
-    if(p->out_file_handle < 0) return 1;    
-	
+  if(p->out_file_handle < 0) return 1;    
+	*/
+
+  filenumber = open(file, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+  //Save
+	old = dup(custom);
+  //All output goes to file
+  dup2(filenumber,custom);
+  flag=1;
+  //Fork			
+	/*pid_t pid = fork();
+	if(pid == 0){
+		parseLine(p);
+		close(filenumber);		
+	}else{
+		wait(NULL);
+	}
+	//Close file
+	close(filenumber);
+	//Restore
+	dup2(old, custom);*/
+	return(0);
+  
+/*
+  char* cmd = "printenv --gdfgd 2";
+	int fd = open("supyouZZ", O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
+	//Save stdout
+	int old = dup(custom);
+	//All output goes to fd
+	dup2(fd,custom);
+	//Fork			
+	pid_t pid = fork();
+	if(pid == 0){
+		runSingle(cmd);
+		close(fd);		
+	}else{
+		wait(NULL);
+	}
+	//Close file
+	close(fd);
+	//Restore
+	dup2(old, custom);
+	return(0);
+*/
+
+
+
+
+
 
   } else if(countIn('<', cmd) == 1 || countIn('>', cmd) == 1){
     return 2;

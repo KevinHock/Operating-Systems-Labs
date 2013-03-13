@@ -71,6 +71,12 @@ void historyPrint();
 //Signature Wolfie Function:
 void wolfiePrint();
 
+//Random Flag
+int flag=0;
+int old;
+int filenumber;
+int custom;
+
 /*************************************
  * Constants                         *
  ************************************/
