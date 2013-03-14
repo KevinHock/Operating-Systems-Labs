@@ -419,13 +419,13 @@ int executeCommand(process_list *pa){
   // If command is not builtin:
   } else {
     
-
+    // If there are pipes
     if(pa->num_processes > 1) {
       pipeTo(pa);
       
     } else {
 		
-
+      
       // Fork and execute the command:
       pid = fork();
     
@@ -524,14 +524,30 @@ void runScript(char *input){
  * WORKING HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *********************************************************************************************************/
 int pipeTo(process_list *pl){
+  // Fork twice until next == NULL then wrap and pass to parse command
+  
   pid_t pid1, pid2;
   int i;
+  // Create aset of file descriptors:
+  int fd[2];
   
   // For all processes:
   for(i = 0; i < pl->num_processes; i++){
-
-    // Create aset of file descriptors:
-    int fd[2];
+    //If this isn't the first process
+    if(i!=0){
+      // Parent process closes up output side of pipe 
+      close(fd[1]);
+      
+      //Make all fd[0] go to STDIN
+      dup2(fd[0],0);
+    }if(i+1==pl->num_processes && pl->num_processes!=2){
+      
+      //Black box
+      parseLine(pl->processes[0]);
+      pl->processes++;
+    }if(pl->num_processes==2){
+      printf("WTF MAN ghi");
+    }
     
     // Create a pipe;
     pipe(fd);
@@ -539,26 +555,24 @@ int pipeTo(process_list *pl){
     // Create a fork for the first process:
     pid1 = fork();
     
-    // FORKED PROCESS HERE:
+    // FIRST CHILD HERE
     if(pid1 == 0){
-	    close(fd[0]);
+      // Child process closes input side of pipe
+      close(fd[0]);
+      
+      //Make all output go to fd[1]
+      dup2(fd[1],1);
+      
+      
+      //Black box
+      parseLine(pl->processes[0]);
+      pl->processes++;
+      
+      exit(0);
     }
-        
-    // PARENT HERE:
-    else{
-		  
-	  }
-    
-    
-    
-    
-  } 
-
-
-
-
-
-
+  }
+  return 0;
+}
 
 /*	
   process p1 = pl->processes[0];
@@ -648,8 +662,7 @@ int pipeTo(process_list *pl){
     }
   }
 */
-  return 0;
-}
+
 
 
 /*
