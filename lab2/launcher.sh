@@ -16,5 +16,5 @@
 set +m
 trap '' 2
 trap "stty $(stty -g)" EXIT
-stty  -echo -icanon || exit $?
+stty  -echo -icanon -isig || exit $?
 ./swish
