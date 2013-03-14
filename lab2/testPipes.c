@@ -11,6 +11,8 @@
 
 void ls2file();
 
+//3 strings loop 
+
 int main(void){
         int     fd[2], nbytes;
         pid_t   childpid;
@@ -47,6 +49,7 @@ int main(void){
       		}
       		//Close file
 	        close(fd[0]);
+          
         } 
         return(0);
 }

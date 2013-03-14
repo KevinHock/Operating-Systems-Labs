@@ -1,8 +1,10 @@
 /* CSE 306: Sea Wolves Interactive SHell 
+ * TODO: Custom FD "printenv --gdfgd 2<errlog"
+ * TODO: Add a few if this is negative something failed'z
  * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
  */
 
-#include "kswish.h"
+#include "swish.h"
 
 /**********************************************************************
  * int main (int argc, char ** argv, char **envp)                     *
@@ -419,13 +421,73 @@ int executeCommand(process_list *pa){
   // If command is not builtin:
   } else {
     
-    // If there are pipes
+
     if(pa->num_processes > 1) {
+      int M, procs = pa->num_processes;
+      
       pipeTo(pa);
+
+      int oldin = dup(0);
+      int oldout = dup(1);
       
+      for(M = 0; M < procs - 1; M++){
+	    printf("TAKE TWO: Piping [PROCESS %d FD %d] ---> [PROCESS %d FD %d]\n", M, pa->processes[M]->out_file_handle, M+1, pa->processes[M+1]->in_file_handle);
+
+        //int oldin2 = dup(oldin);
+        //int oldout2 = dup(oldout);
+        if(M>0){
+          if(pa->processes[M]->out_file_handle != -1){
+	        dup2(pa->processes[M]->out_file_handle, pa->processes[M - 1]->out_file_handle);
+	      } 
+	    } else if (M  == procs){
+          dup2(oldout, 1);		
+		} else {
+	  	    dup2(pa->processes[M]->out_file_handle, 1);
+        } 
+
+        if(M>0){
+          if(pa->processes[M]->in_file_handle != -1){
+	  	    dup2(pa->processes[M]->in_file_handle, pa->processes[M - 1]->in_file_handle);
+		  }
+	    } else 
+	  	    dup2(pa->processes[M]->in_file_handle, 0);
+	    
+        pid = fork();    
+        if(pid == 0){                    
+           
+          proc->exit_code = execvp(pa->processes[M]->args[0], pa->processes[M]->args);
+	    
+	    } else {
+			
+		  
+
+        //Restore
+                dup2(oldin, 0);
+                dup2(oldout, 1);
+ 
+		printf("Waiting on %d\n", pid);
+        waitpid(pid, &exit_code, 0);
+		printf("Ran Process %d\n", M);
+          
+        }
+
+      //Restore
+      } 
+      
+      dup2(oldin, 0);
+      dup2(oldout, 1);
+      perror(" REAL END END OF LOOP!");
+      
+      
+      dup2(pa->processes[M]->in_file_handle, pa->processes[M - 1]->in_file_handle);
+      dup2(oldout, 1);		
+      proc->exit_code = execvp(pa->processes[M]->args[0], pa->processes[M]->args);
+      
+      dup2(oldin, 0);
+      dup2(oldout, 1);
+      perror(" REAL END END OF LOOP!");
     } else {
-		
-      
+
       // Fork and execute the command:
       pid = fork();
     
@@ -524,145 +586,19 @@ void runScript(char *input){
  * WORKING HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
  *********************************************************************************************************/
 int pipeTo(process_list *pl){
-  // Fork twice until next == NULL then wrap and pass to parse command
-  
-  pid_t pid1, pid2;
+  int fd[pl->num_processes - 1][2];
   int i;
-  // Create aset of file descriptors:
-  int fd[2];
   
-  // For all processes:
-  for(i = 0; i < pl->num_processes; i++){
-    //If this isn't the first process
-    if(i!=0){
-      // Parent process closes up output side of pipe 
-      close(fd[1]);
-      
-      //Make all fd[0] go to STDIN
-      dup2(fd[0],0);
-    }if(i+1==pl->num_processes && pl->num_processes!=2){
-      
-      //Black box
-      parseLine(pl->processes[0]);
-      pl->processes++;
-    }if(pl->num_processes==2){
-      printf("WTF MAN ghi");
-    }
-    
-    // Create a pipe;
-    pipe(fd);
-    
-    // Create a fork for the first process:
-    pid1 = fork();
-    
-    // FIRST CHILD HERE
-    if(pid1 == 0){
-      // Child process closes input side of pipe
-      close(fd[0]);
-      
-      //Make all output go to fd[1]
-      dup2(fd[1],1);
-      
-      
-      //Black box
-      parseLine(pl->processes[0]);
-      pl->processes++;
-      
-      exit(0);
-    }
+  for(i = 0; i < pl->num_processes - 1; i++){
+	pipe(fd[i]);
+	
+	printf("Piping [PROCESS %d FD %d] ---> [PROCESS %d FD %d]\n", i, fd[i][1], i+1, fd[i][0]);
+	pl->processes[i]->out_file_handle = fd[i][1];
+	pl->processes[i+1]->in_file_handle = fd[i][0];
   }
+
   return 0;
 }
-
-/*	
-  process p1 = pl->processes[0];
-  process p1 = pl->processes[1];
-  
-  int fd[2];
-  pid_t pid1, pid2;
-  pipe(fd);
-  int exit_code = 0;
-
-  printf("I am pipeTo1!\n");
-	  
-  // Fork and execute the command:
-  if((pid1 = fork()) == -1){
-    perror("Could not execute process.\n");
-	return -1;
-  }
-
-  if(pid1 == 0){
-    if(debug){
-	  printf("[DEBUG] Replacing STDOUT with FD %d \n", p1->out_file_handle);
-      printf("[DEBUG] Replacing STDIN with FD %d \n", p1->in_file_handle);
-    }
-
-    close(fd[0]);
-    dup2(fd[1],1);        
-  	  
-    // REDIRECT STUFF: PROLOGUE
-    if(flag){
-    //Close file
-      close(filenumber);
-      //Restore
-       dup2(old, custom);
-       flag=0;
-    }
-
-    p1->exit_code = execvp(p1->args[0], p1->args);
-    printf("Command [%s] was not found.\n", p1->args[0]);
-
-    killMe(-1);
-
-  } else {
-
-    // Wait for the child and store the exit code:
-    waitpid(pid1, &exit_code, 0);
-    if(exit_code == -1) return -1;
-
-    close(fd[1]);
-    dup2(fd[0], 0);
-
-    // Fork and execute the command:
-    if((pid2 = fork()) == -1){
-      perror("Could not execute process.\n");
-	  return -1;
-    }
-  
-    // Fork and execute the command:
-    if(pid2 == 0){
-      if(debug){
-	    printf("[DEBUG] Replacing STDOUT with FD %d \n", p2->out_file_handle);
-        printf("[DEBUG] Replacing STDIN with FD %d \n", p2->in_file_handle);
-      }
-  	  
-      // REDIRECT STUFF: PROLOGUE
-      if(flag){
-        //Close file
-        close(filenumber);
-        //Restore
-        dup2(old, custom);
-        flag=0;
-      }
-
-      p2->exit_code = execvp(p1->args[0], p2->args);
-      printf("Command [%s] was not found.\n", p2->args[0]);
-
-      killMe(-1);   
-    }
-
-
-    // REDIRECTS STUFF: EPILOGUE
-    if(flag){
-      //Close file
-      close(filenumber);
-      //Restore
-      dup2(old, custom);
-      flag=0;
-    }
-  }
-*/
-
 
 
 /*
