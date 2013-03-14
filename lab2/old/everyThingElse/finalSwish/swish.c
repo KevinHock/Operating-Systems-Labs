@@ -1,7 +1,10 @@
 /* CSE 306: Sea Wolves Interactive SHell 
- * TODO: Custom FD "printenv --gdfgd 2<errlog"
- * TODO: Add a few if this is negative something failed'z
- * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
+ * 
+ * TODO: Implement 'set' command for adding variables,
+ * TODO: Implement more than one argument
+ * TODO: Implement piping, redirecting, etc
+ * TODO: Implement scripting support (just need to read the lines of the file)
+ * TODO: Implement job control
  */
 
 #include "swish.h"
@@ -204,65 +207,6 @@ void historyPrint(){
   }
 }
 
-/**********************************************************************
- * void wolfiePrint()                                                *
- * ----------------------------------------------                    *
- * Print the signature wolfie.             		                     *
- *********************************************************************/
-void wolfiePrint(){
-  printf("					$I7$I7$IO$$ZZ$$\n");
-  printf("				  +  ?+II?+I?I+7I7+777$ ?\n");
-  printf("			      II?=.  ,==7???+II7$II7    II?Z\n");
-  printf("			     8OI77Z8  IOO?+?+?I$77$7Z  OO$$7Z\n");
-  printf("			    +DZ7$7O$8  O:,I++??IIZO8   FDZ$OO88\n");
-  printf("			     D8D  ZOIO ~+++7?II??88Z  8OOD  8?I\n");
-  printf("		           INDDODZ8O ZOZ+?7I7?=$ZO8  DO8ZDDNNII \n");
-  printf("			    ?ZDZD+7Z O8.?O?7$+?$IZOOD 88888D8FR\n");
-  printf("			      $8Z   ZOZ$7=?+?+?7$IZODO   D8 \n");
-  printf("			     ??ZZO$I$77,7+I++7??$$I8ODD8$O88$ \n");
-  printf("			    7?ZZ8Z$7+:~7+II+?$+?I?ZZ7Z8IZ7Z$Z7 \n");
-  printf("	      		  $II=$I??7.$=I+?III??+7I7?7ZZ$Z$$8OO$$ \n");
-  printf("           		  I??ZI=+7IO.I?.I7I$II$7?7$IZZ8Z8ZZOZZ$$7 \n");
-  printf("			 ?Z+I+ZI=7:$,7=II?$II=II77I778O8O8OIOOZ$$ \n");
-  printf("		      =7ZZIZ$7=7777?O$OZ88ZOOO$$I$OZ8OZ8$DO$ZOZZZ \n");
-  printf("		      Z$O?7$ZZI$7$8O$Z$Z$ZOZZ$$OOZDO$8OO8OZ8Z7$$OZ$ \n");
-  printf("		     ZZOZ$O$7$$OOZZ887  ZD8$  8DOOOO888OO8O$88$7ZZ$ \n");
-  printf("		    ?I+$8O+IO78OOO$O8   8OOZ  ZO8OII$8NN8OZOZOOO7Z$Z \n");
-  printf("		   =+?ZOZI$8OZ8N+  DD   D8NM  D8NN?  DDMDDD8OOO8ZOOZ \n");
-  printf("		 $7$OOD~7ZIZ8O8D  MDND:,8DDNN DDDDN  DNNNDD888O88OOZZZ \n");
-  printf("		$7?ZODIZ$$$$888O .DMMNNDD8D88DNNNMD  O88ODDDOD88$D8OOZOO \n");
-  printf("	     IO8+$O$7ZZZZ$$ZZ8MNMMMMMMN8DDDDDNMMMMMMDN8DNNDNN88Z$Z8O88ZZ \n");
-  printf("	   ++I$O?OZ$8O77$ZZ8NMMMMMMMMMMNNDDNMNMMMNMMMMMMNND8DOOZOZZOOZO7$ \n");
-  printf("	  ???7$$7+7OO8OZ8OMNMNNMMMNNNDDMNDNNDDDDDDDNNNNNNDD88O8D8OOOZOZ77 \n");
-  printf("	  =~II+$IZOODDDNDO7Z7$N,~ D8DD8D8D88OO888:   DDOZ8ONND$DD888O$OZ$ \n");
-  printf("	 ~$:?:?7ZO8DDDNIOI7I$?I?~  7 ??8ZO$,   7?~  $ZZ7Z$OONNDD8DNDDOZ$Z \n");
-  printf("	 ~?7I77I$8NDOO7??$I$$Z,Z   ++~  7I$ +    +=$7ZZZODOOZ8OZO8D8OOO$Z \n");
-  printf("	  +~?I$$IZ$$:=7$=+Z.888~I+++++     $    +I~=Z$Z8Z77$8ZOOZOO8OZ \n");
-  printf("	    ?$7777$?$$$8:8ZZ$$..=++?+$ . :$+   ID=7ZZO8DDOO8DD8DO8DD \n");
-  printf("		$ZIO$ZZI8Z788OO$7I$I~77,7+II7Z OD8Z8O88O8DNDDNNNND88D \n");
-  printf("		 7$=ZZZO88O8DDZ8Z$$I7I$I7I+$DDZOOOD8D88DNNMNNNMDDOOD \n");
-  printf("	  	   $IZZZONDNNOO8D8ZOZ8NDDNNDN8DD$8NN8NOODNNDD8DODN \n");
-  printf("	 		 $Z$ZZ8DDOD8N88ODNNDNNDDDN8NDDNMODDDDDDDN \n");
-  printf("				O8$ODO8NDNMNNNNNDN8D8MDNDNDNNDND \n");
-  printf("\n");
-  printf("                   .__    _____      ____    ____  __\n");
-  printf("                  /  \\    /  \\ ____  |  | _/ ____\\|__|  ____  \n");
-  printf("                  \\   \\/\\/   //  _ \\ |  | \\   __\\ |  |_/ __ \\ \n");
-  printf("                   \\        /(  <_> )|  |__|  |   |  |\\  ___/ \n");
-  printf("                    \\__/\\  /  \\____/ |____/|__|   |__| \\___  >\n");
-  printf("                         \\/                                \\/ \n");
-  printf("                      _________.__             .__   .__   \n");
-  printf("                     /   _____/|  |__    ____  |  |  |  |  \n");
-  printf("                     \\_____  \\ |  |  \\ _/ __ \\ |  |  |  |  \n");
-  printf("                     /        \\|   Y  \\\\  ___/ |  |__|  |__\n");
-  printf("                    /_______  /|___|  / \\___  >|____/|____/\n");
-  printf("                            \\/      \\/      \\/             \n");
-  printf("\n");   
-}
-
-
-
-
 
 
 /**********************************************************************
@@ -287,34 +231,24 @@ int parseLine(char *cmd){
   cmd_blocks = strtok(cmd, "|");  
   while(cmd_blocks){	
     process *p = malloc(sizeof(process));
-	  result = parseCommand(p, cmd_blocks);
+	result = parseCommand(p, cmd_blocks);
 	
-	  if(result == 1){
-	    printf("Sorry, I failed to open that file.\n");
-	    return 1;
+	if(result == 1){
+	  printf("Sorry, I failed to open that file.\n");
+	  return 1;
     } else if (result == 2){
       printf("Sorry, I dont know how to handle that command.\n");
       return 2;
-    } else if (result == 3){
-      printf("That is not a valid file descriptor.\n");
-      return 3;
-    } else {
-      if(debug)
+	} else {
+	  if(debug)
   	    printf("Added %s to the process list.\n", p->args[0]);
     }
     
     addProcessToList(p, proc_list);	
     cmd_blocks = strtok(NULL, "|");
   }
-  //ghi
-  int letsSee;
-  char str[22];
-  if(proc_list->num_processes > 0){
-    letsSee=executeCommand(proc_list);
-    sprintf(str, "%d", letsSee);
-    setenv("?",str,1);
-  }
-  if(debug) printf("? is set to %d\n",letsSee);
+  
+  executeCommand(proc_list);
   return result;
 }
 
@@ -334,113 +268,51 @@ int executeCommand(process_list *pa){
  
   // Handle Built-In Commands!
   if(!strcmp(proc->args[0], EXIT_CMD)){
-	  killMe(0);
-    return 0;   
-  } 
-  
-  else if(!strcmp(proc->args[0], CD_CMD)){
-    char *olddir = malloc(strlen(dir + 1));
-    strcpy(olddir, dir);
-    if(proc->args[1] == NULL){
-       chdir(home_dir);
-       if(strcmp(olddir, home_dir))
-        setenv("OLDPWD", olddir, 1);
-       free(olddir);
-       return 0;
-    } else if(!strcmp(proc->args[1], "-")) {
-       chdir(resolveVar("OLDPWD")); 
-       setenv("OLDPWD", olddir, 1);
-       free(olddir);
-       return 0;
-    } else if(chdir(proc->args[1])) {
-      printf("Directory Not Found [%s]\n", proc->args[1]);
-        return 1;
-    } else {
-      if(strcmp(olddir, proc->args[1]))
-        setenv("OLDPWD", olddir, 1);
-      free(olddir);
-      return 0;
-      }
+    killMe(0);
+    return 0;
+    
+  } else if(!strcmp(proc->args[0], CD_CMD)){
+	if(proc->args[1] == NULL){
+	  chdir(home_dir);
+	} else if(chdir(proc->args[1])) {
+	  printf("Directory Not Found [%s]\n", proc->args[1]);
+	  fflush(stdout);
+      return 1;
+	} else return 0;
+    
   } else if(!strcmp(proc->args[0], CLEAR_CMD)){
-      historyClear();  
-      return 0;
-  } else if(!strcmp(proc->args[0], ECHO_CMD)){
-      int i=1;
-      while(proc->args[i]!=NULL){
-        //Had to hard code against printing $IDONTEXIST
-        if(proc->args[i][0]!='$')printf("%s ",proc->args[i]);
-        i++;
-      }
-      printf("\n");
-      return(0);
+    historyClear();  
+    return 0;
+    
   } else if(!strcmp(proc->args[0], HISTORY_CMD)){
-      historyPrint();
-      return 0;
-  } else if(!strcmp(proc->args[0], SET_CMD)){
-      int i=0;
-      while(proc->args[i++]!=NULL){}
-      if(i>4){
-        if(!strcmp(proc->args[2], "=")){
-          setenv(proc->args[1],proc->args[3],1);
-          return 0;
-        } else{
-          printf("Improper use of arguments.\n");
-          return -1;
-        }
-      }else{
-        printf("Not enough arguments to set\n");
-        return -1;
-      }
-  } else if(!strcmp(proc->args[0], WOLFIE_CMD)){
-	    wolfiePrint();
-	    return 0;  
+    historyPrint();
+    return 0;
   } else {
+  
+	if(debug){
+	  printf("[DEBUG] Redirecting FD %d to STDOUT.\n", proc->out_file_handle);
+      printf("[DEBUG] Redirecting FD %d to STDIN.\n", proc->in_file_handle);
+    }
     
     // Fork and execute the command:
     pid = fork();
     
     if(pid == 0){
-  	  if(debug){
-	    printf("[DEBUG] Replacing STDOUT with FD %d \n", proc->out_file_handle);
-        printf("[DEBUG] Replacing STDIN with FD %d \n", proc->in_file_handle);
-      }
-      /*
-      if(proc->out_file_handle >= 0){
-	    dup2(proc->out_file_handle, 1);*/
-	  //}
-/*
+	  if(proc->out_file_handle >= 0){
+	    dup2(proc->out_file_handle, 1);
+	  }
 	  if(proc->in_file_handle >= 0){
 	    dup2(proc->in_file_handle, 0);
-	  }*/
+	  }
+
       proc->exit_code = execvp(proc->args[0], proc->args);
       printf("Command [%s] was not found.\n", proc->args[0]);
-      if(flag){
-        //Close file
-        close(filenumber);
-        //Restore
-        dup2(old, custom);
-        flag=0;
-      }
       killMe(proc->exit_code);
     } else {
 
 	  // Wait for the child and store the exit code:
       waitpid(pid, &exit_code, 0);
-      //ghi
-      /*char str[15];
-      sprintf(str, "%d", exit_code);
-      if(debug) printf("Going to set ? to %s\n",str);
-      setenv("?",str,1);
-      */ 
-      if(flag){
-        //ghiz
-        //Close file
-        close(filenumber);
-        //Restore
-        dup2(old, custom);
-        flag=0;
-      }
-      //ghi
+      
     }
   }
 
@@ -478,7 +350,7 @@ void runScript(char *input){
   	      cursor++;
 	    } 
         
-      if(strlen(line) > 0 && *line != '#'){
+        if(strlen(line) > 0 && *line != '#'){
           if(debug) printf("Executing [%s]\n", line); 
           parseLine(line);
 	    } 
@@ -528,23 +400,18 @@ int addProcessToList(process *p, process_list *pl){
 
 
 char **buildArgs(char *in){
-  char **result = NULL;//ghi Danglin pointer man
+  char **result = NULL;
   char *tok = strtok(in, " ");
   int elements = 0;
     
   while(tok){
- 	  elements++;
-	  result = realloc(result, sizeof(char *) * elements);
+ 	elements++;
+	result = realloc(result, sizeof(char *) * elements);
 	
-	  if(result == NULL) return NULL;
+	if(result == NULL) return NULL;
 	
-    //Make arg point to tok if it isn't an environmental variable
-    if(!strncmp(tok,"$",1) && getenv(tok+1)!=NULL){
-      result[elements-1] = getenv(tok+1);
-    }else result[elements - 1] = tok;
-    
-    //On to the next one
-	  tok = strtok(NULL, " ");
+	result[elements - 1] = tok;
+	tok = strtok(NULL, " ");
   }
   
   result = realloc(result, sizeof(char *) * (elements + 1));
@@ -557,33 +424,20 @@ int parseCommand(process *p, char *cmd){
   int result = 0;
   p->in_file_handle = -1;
   p->out_file_handle = -1;
-  char *args, *file, *junk;
-  int fd;
+  char *args, *file;
+  
+
   // DISABLE MULTIPLE INPUT REDIRECTS
   if(countIn('<', cmd) > 1){
     return 2;
 	
 
-  // DISABLE MULTIPLE OUTPUT REDIRECTS BUT CHECK FOR APPENDING
+  // DISABLE MULTIPLE OUTPUT REDIRECTS
   } else if (countIn('>', cmd) == 2) {
-	  junk = cmd;
+	  char *junk = cmd;
 	  while(*junk != '>') junk++;
 	  junk++;
-	  if(*junk != '>') {
-	    return 2;
-	  } else {
-	    args = strtok(cmd, ">");
-	    file = strtok(NULL, ">");
-	
-	    p->args = buildArgs(args);
-
-	    if(file != NULL){
-  	      file = trim(file);
-        } else return 1;
-	
-	    p->out_file_handle = open(file, O_CREAT | O_APPEND | O_RDWR, S_IRUSR | S_IWUSR);
-        if(p->out_file_handle < 0) return 1;    		  
-	  }
+	  if(*junk != '>') return 2;
   } else if(countIn('>', cmd) > 2){
 	  return 2;
 
@@ -594,66 +448,40 @@ int parseCommand(process *p, char *cmd){
 	
 
   // HANDLE A SINGLE INPUT REDIRECT
-  // FILE INTO COMMAND startx
   } else if(countIn('<', cmd) == 1 && countIn('>', cmd) == 0){
-	    args = strtok(cmd, "<");
-	    file = strtok(NULL, "<");
+	args = strtok(cmd, "<");
+	file = strtok(NULL, "<");
+	
+	p->args = buildArgs(args);
 
-	    p->args = buildArgs(args);
+	if(file != NULL){
+  	  file = trim(file);
+    } else return 1;
+	
+	p->in_file_handle = open(file, O_RDONLY);
+    if(p->in_file_handle < 0)
+      return 1;
+        
 
-	    if(file != NULL){
-  	    file = trim(file);
-      } else return 1;
-
-      custom=0;
-      filenumber = open(file, O_RDONLY);
-      old = dup(custom);
-      //All input goes to fd
-      dup2(filenumber,custom);
-      flag=1;
-      return 0;
-      
   // HANDLE A SINGLE OUTPUT REDIRECT
-  // COMMAND INTO FILE
   } else if(countIn('<', cmd) == 0 && countIn('>', cmd) == 1){
 	args = strtok(cmd, ">");
 	file = strtok(NULL, ">");
 	
-	junk = args;
-	while(*junk != 0) junk ++;
-	while(*junk != ' ' && junk != args) junk--;
-	
-	if(junk != args){
-	  *junk = '\0';
-	  junk++;
-	  fd = atoi(junk);
-	  printf("CUSTOM FD is %d\n",fd);
-	  if(debug) printf("Redirecting from FD %d\n", fd);
-    custom=fd;
-	}
-	
 	p->args = buildArgs(args);
 
-  int jck=0;
-  while(p->args[jck]!=NULL){
-    printf("args[%d] =\t%s\n",jck,p->args[jck]);
-    jck++;
-  }
-  
 	if(file != NULL){
   	  file = trim(file);
-      printf("FILE is %s\n",file);
-  } else return 1;
+    } else return 1;
+	
+    printf("File handle is: %d\n", p->out_file_handle);
+	p->out_file_handle = open(file, O_CREAT | O_TRUNC | O_RDWR, S_IRUSR | S_IWUSR);
+    printf("File handle is: %d\n", p->out_file_handle);
+    if(p->out_file_handle < 0) return 1;    
+	
 
-  filenumber = open(file, O_CREAT | O_RDWR | O_APPEND, S_IRUSR | S_IWUSR);
-  //Save
-	old = dup(custom);
-  //All output goes to file
-  dup2(filenumber,custom);
-  flag=1;
-	return(0);
   } else if(countIn('<', cmd) == 1 || countIn('>', cmd) == 1){
-    return 2;
+	p->args = buildArgs(cmd);
   }
   
   return result;
