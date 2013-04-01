@@ -83,7 +83,6 @@ static void *client(void *arg)
     case 0: // Search
       DEBUG_PRINT ("Search\n");
       search (buf, length, NULL);
-      print();
       break;
     case 1: // insert
       DEBUG_PRINT ("insert\n");

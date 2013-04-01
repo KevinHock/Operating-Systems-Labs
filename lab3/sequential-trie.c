@@ -15,7 +15,7 @@ struct trie_node {
 };
 
 static struct trie_node * root = NULL;
-
+int count=0;
 struct trie_node * new_leaf (const char *string, size_t strlen, int32_t ip4_address) {
   struct trie_node *new_node = malloc(sizeof(struct trie_node));
   if (!new_node) {
@@ -34,9 +34,11 @@ struct trie_node * new_leaf (const char *string, size_t strlen, int32_t ip4_addr
   return new_node;
 }
 
+// See if this key is a substring of the string passed in
 int compare_keys (const char *string1, int len1, const char *string2, int len2, int *pKeylen) {
     int keylen, offset1, offset2;
     keylen = len1 < len2 ? len1 : len2;
+    //one of these offsets is going to be zero
     offset1 = len1 - keylen;
     offset2 = len2 - keylen;
     assert (keylen > 0);
@@ -48,18 +50,16 @@ int compare_keys (const char *string1, int len1, const char *string2, int len2, 
 void init(int numthreads) {
   if (numthreads != 1)
     printf("WARNING: This Trie is only safe to use with one thread!!!  You have %d!!!\n", numthreads);
-
+  
   root = NULL;
 }
 
 /* Recursive helper function.
  * Returns a pointer to the node if found.
  * Stores an optional pointer to the 
- * parent, or what should be the parent if not found.
- * 
+ * parent, or what should be the parent if not found. 
  */
-struct trie_node * 
-_search (struct trie_node *node, const char *string, size_t strlen) {
+struct trie_node *_search (struct trie_node *node, const char *string, size_t strlen) {
 	 
   int keylen, cmp;
 
@@ -72,7 +72,6 @@ _search (struct trie_node *node, const char *string, size_t strlen) {
   cmp = compare_keys(node->key, node->strlen, string, strlen, &keylen);
   if (cmp == 0) {
     // Yes, either quit, or recur on the children
-
     // If this key is longer than our search string, the key isn't here
     if (node->strlen > keylen) {
       return NULL;
@@ -81,10 +80,8 @@ _search (struct trie_node *node, const char *string, size_t strlen) {
       return _search(node->children, string, strlen - keylen);
     } else {
       assert (strlen == keylen);
-
       return node;
     }
-
   } else if (cmp < 0) {
     // No, look right (the node's key is "less" than the search key)
     return _search(node->next, string, strlen);
@@ -96,7 +93,7 @@ _search (struct trie_node *node, const char *string, size_t strlen) {
 }
 
 
-int search  (const char *string, size_t strlen, int32_t *ip4_address) {
+int search(const char *string, size_t strlen, int32_t *ip4_address) {
   struct trie_node *found;
 
   // Skip strings of length 0
@@ -132,6 +129,7 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
       struct trie_node *new_node;
 
       assert(keylen == strlen);
+      //It better be either 
       assert((!parent) || parent->children == node);
 
       new_node = new_leaf (string, strlen, ip4_address);
@@ -158,7 +156,7 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
 	return 1;
       } else {
 	// Recur on children list, store "parent" (loosely defined)
-      return _insert(string, strlen - keylen, ip4_address,
+        return _insert(string, strlen - keylen, ip4_address,
 		     node->children, node, NULL);
       }
     } else {
@@ -174,10 +172,9 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
   } else {
     /* Is there any common substring? */
     int i, cmp2, keylen2, overlap = 0;
-    for (i = 1; i < keylen; i++) {
-      cmp2 = compare_keys (&node->key[i], node->strlen - i, 
-			   &string[i], strlen - i, &keylen2);
-      assert (keylen2 > 0);
+    for (i = 1; i < keylen; i++){
+    	cmp2 = compare_keys (&node->key[i], node->strlen - i, &string[i], strlen - i, &keylen2);
+    	assert (keylen2 > 0);
       if (cmp2 == 0) {
 	overlap = 1;
 	break;
@@ -242,9 +239,8 @@ int insert (const char *string, size_t strlen, int32_t ip4_address) {
  * parent, or what should be the parent if not found.
  * 
  */
-struct trie_node * 
-_delete (struct trie_node *node, const char *string, 
-	 size_t strlen) {
+struct trie_node *_delete (struct trie_node *node, const char *string, size_t strlen)
+{
   int keylen, offset1, offset2, cmp;
 
   // First things first, check if we are NULL 
@@ -310,7 +306,7 @@ _delete (struct trie_node *node, const char *string,
 
 }
 
-int delete  (const char *string, size_t strlen) {
+int delete(const char *string, size_t strlen) {
   // Skip strings of length 0
   if (strlen == 0)
     return 0;
@@ -319,16 +315,19 @@ int delete  (const char *string, size_t strlen) {
 }
 
 
-void _print (struct trie_node *node) {
+void _print(struct trie_node *node) {
+  printf("Count is %d\n",count++);
   printf ("Node at %p.  Key %.*s, IP %d.  Next %p, Children %p\n", 
 	  node, node->strlen, node->key, node->ip4_address, node->next, node->children);
   if (node->children)
     _print(node->children);
   if (node->next)
     _print(node->next);
+  count=0;
 }
 
 void print() {
   /* Do a simple depth-first search */
   _print(root);
 }
+

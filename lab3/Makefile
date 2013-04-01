@@ -6,16 +6,16 @@ CFLAGS = -g -Wall -Werror -pthread
 	gcc $(CFLAGS) -c -o $@ $<
 
 dns-sequential: main.c sequential-trie.o
-	gcc $(CFLAGS) -o dns-sequential sequential-trie.o main.c
+	gcc $(CFLAGS) -ggdb -o dns-sequential sequential-trie.o main.c
 
 dns-mutex: main.c mutex-trie.o
-	gcc $(CFLAGS) -o dns-mutex mutex-trie.o main.c
+	gcc $(CFLAGS) -ggdb -o dns-mutex mutex-trie.o main.c
 
 dns-rw: main.c rw-trie.o
-	gcc $(CFLAGS) -o dns-rw rw-trie.o main.c
+	gcc $(CFLAGS) -ggdb -o dns-rw rw-trie.o main.c
 
 dns-fine: main.c fine-trie.o
-	gcc $(CFLAGS) -o dns-fine fine-trie.o main.c
+	gcc $(CFLAGS) -ggdb -o dns-fine fine-trie.o main.c
 
 handin:	clean
 	@if [ `git status --porcelain| wc -l` != 0 ] ; then echo "\n\n\n\n\t\tWARNING: YOU HAVE UNCOMMITTED CHANGES\n\n    Consider committing any pending changes and rerunning make handin.\n\n\n\n"; fi

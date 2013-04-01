@@ -9,12 +9,16 @@
 
 void init(int numthreads) {
   /* Your code here */
+  pthread_t tid;
+  //create thread
+  pthread_create(&tid,NULL,runner,argv[1]);
 }
 
 
 
 int insert (const char *string, size_t strlen, int32_t ip4_address) {
   /* Your code here */
+  
   return 0;
 }
 
