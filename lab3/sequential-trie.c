@@ -271,7 +271,10 @@ _delete (struct trie_node *node, const char *string,
 	/* If the node doesn't have children, delete it.
 	 * Otherwise, keep it around to find the kids */
 	if (found->children == NULL && found->ip4_address == 0) {
-	  node->next = found->next;
+	  if (node->next == found)
+	    node->next = found->next;
+	  else
+	    node->children = found->next;
 	  free(found);
 	}
 	return node; /* Recursively delete needless interior nodes */
@@ -297,7 +300,10 @@ _delete (struct trie_node *node, const char *string,
       /* If the node doesn't have children, delete it.
        * Otherwise, keep it around to find the kids */
       if (found->children == NULL && found->ip4_address) {
-	node->next = found->next;
+        if (node->next == found)
+          node->next = found->next;
+        else
+          node->children = found->next;
 	free(found);
       }
       return node; /* Recursively delete needless interior nodes */
