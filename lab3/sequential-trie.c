@@ -186,16 +186,24 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
 
     if (overlap) {
       // Insert a common parent, recur
-      struct trie_node *new_node = new_leaf (&string[i], strlen - i, ip4_address);
+      struct trie_node *new_node = new_leaf (&string[i], strlen - i, 0);
       int diff = node->strlen - i;
       assert ((node->strlen - diff) > 0);
       node->strlen -= diff;
       new_node->children = node;
       assert ((!parent) || (!left));
 
-      if (parent) {
+      if (node == root) {
+	new_node->next = node->next;
+	node->next = NULL;
+	root = new_node;
+      } else if (parent) {
+	assert(parent->children == node);
+	new_node->next = NULL;
 	parent->children = new_node;
       } else if (left) {
+	new_node->next = node->next;
+	node->next = NULL;
 	left->next = new_node;
       } else if ((!parent) && (!left)) {
 	root = new_node;
@@ -203,8 +211,7 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
 
       return _insert(string, i, ip4_address,
 		     node, new_node, NULL);
-
-    } else if (cmp > 0) {
+    } else if (cmp < 0) {
       if (node->next == NULL) {
 	// Insert here
 	struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
@@ -217,9 +224,11 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
     } else {
       // Insert here
       struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
-      node->next = new_node;
-      return 1;
+      new_node->next = node;
+      if (node == root)
+	root = new_node;
     }
+    return 1;
   }
 }
 
@@ -245,20 +254,15 @@ int insert (const char *string, size_t strlen, int32_t ip4_address) {
 struct trie_node * 
 _delete (struct trie_node *node, const char *string, 
 	 size_t strlen) {
-  int keylen, offset1, offset2, cmp;
+  int keylen, cmp;
 
   // First things first, check if we are NULL 
   if (node == NULL) return NULL;
 
   assert(node->strlen < 64);
 
-  // Take the minimum of the two lengths
-  keylen = node->strlen < strlen ? node->strlen : strlen;
-  offset1 = node->strlen - keylen;
-  offset2 = strlen - keylen;
-
   // See if this key is a substring of the string passed in
-  cmp = strncmp(&node->key[offset1], &string[offset2], keylen);
+  cmp = compare_keys (node->key, node->strlen, string, strlen, &keylen);
   if (cmp == 0) {
     // Yes, either quit, or recur on the children
 
@@ -271,12 +275,17 @@ _delete (struct trie_node *node, const char *string,
 	/* If the node doesn't have children, delete it.
 	 * Otherwise, keep it around to find the kids */
 	if (found->children == NULL && found->ip4_address == 0) {
-	  if (node->next == found)
-	    node->next = found->next;
-	  else
-	    node->children = found->next;
+	  assert(node->children == found);
+	  node->children = found->next;
 	  free(found);
 	}
+	
+	/* Delete the root node if we empty the tree */
+	if (node == root && node->children == NULL && node->ip4_address == 0) {
+	  root = node->next;
+	  free(node);
+	}
+	
 	return node; /* Recursively delete needless interior nodes */
       } else 
 	return NULL;
@@ -299,13 +308,11 @@ _delete (struct trie_node *node, const char *string,
     if (found) {
       /* If the node doesn't have children, delete it.
        * Otherwise, keep it around to find the kids */
-      if (found->children == NULL && found->ip4_address) {
-        if (node->next == found)
-          node->next = found->next;
-        else
-          node->children = found->next;
+      if (found->children == NULL && found->ip4_address == 0) {
+	assert(node->next == found);
+	node->next = found->next;
 	free(found);
-      }
+      } 
       return node; /* Recursively delete needless interior nodes */
     }
     return NULL;
@@ -335,6 +342,8 @@ void _print (struct trie_node *node) {
 }
 
 void print() {
+  printf ("Root is at %p\n", root);
   /* Do a simple depth-first search */
-  _print(root);
+  if (root)
+    _print(root);
 }
