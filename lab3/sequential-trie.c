@@ -227,6 +227,8 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
       new_node->next = node;
       if (node == root)
 	root = new_node;
+      else if (parent && parent->children == node)
+	parent->children = new_node;
     }
     return 1;
   }
@@ -295,6 +297,17 @@ _delete (struct trie_node *node, const char *string,
       /* We found it! Clear the ip4 address and return. */
       if (node->ip4_address) {
 	node->ip4_address = 0;
+
+	/* Delete the root node if we empty the tree */
+	if (node == root && node->children == NULL && node->ip4_address == 0) {
+	  root = node->next;
+	  free(node);
+	  return (struct trie_node *) 0x100100; /* XXX: Don't use this pointer for anything except 
+						 * comparison with NULL, since the memory is freed.
+						 * Return a "poison" pointer that will probably 
+						 * segfault if used.
+						 */
+	}
 	return node;
       } else {
 	/* Just an interior node with no value */
@@ -312,7 +325,8 @@ _delete (struct trie_node *node, const char *string,
 	assert(node->next == found);
 	node->next = found->next;
 	free(found);
-      } 
+      }       
+
       return node; /* Recursively delete needless interior nodes */
     }
     return NULL;

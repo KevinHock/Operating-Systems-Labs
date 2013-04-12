@@ -140,10 +140,29 @@ squatter_stress(void *arg)
 int self_tests() {
   int rv;
   int32_t ip = 0;
+
+  rv = insert ("abc", 3, 4);
+  if (!rv) die ("Failed to insert key abc\n");
+
+  rv = delete("abc", 3);
+  if (!rv) die ("Failed to delete key abc\n");
+  print();
+
+  rv = insert ("google", 6, 5);
+  if (!rv) die ("Failed to insert key google\n");
+
+  rv = insert ("goggle", 6, 4);
+  if (!rv) die ("Failed to insert key goggle\n");
+
+  rv = delete("goggle", 6);
+  if (!rv) die ("Failed to delete key goggle\n");
+
+  rv = delete("google", 6);
+  if (!rv) die ("Failed to delete key google\n");
   
   rv = insert ("ab", 2, 2);
   if (!rv) die ("Failed to insert key ab\n");
-  
+
   rv = insert("bb", 2, 2);
   if (!rv) die ("Failed to insert key bb\n");
 
@@ -180,6 +199,10 @@ int self_tests() {
 
   rv = delete("ab", 2);
   if (!rv) die ("Failed to delete real key ab\n");
+
+  printf("End of self-tests, tree is:\n");
+  print();
+  printf("End of self-tests\n");
 
   return 0;
 }
