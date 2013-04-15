@@ -1,3 +1,0 @@
-MpthreadTest	pthreadTest.c	/^int main(int argc, char *argv[]){$/
-runner	pthreadTest.c	/^void *runner(void *param){$/
-sum	pthreadTest.c	5

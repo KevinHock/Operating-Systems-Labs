@@ -1,19 +1,14 @@
-/* Multi-threaded DNS-like Simulation.
- * 
- * Don Porter - porter@cs.stonybrook.edu
- * 
- * CSE 306 - Stony Brook University
- * 
- */
-
-#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include <assert.h>
 #include <ctype.h>
+#include <time.h>
+#include <pthread.h>
 #include "trie.h"
+//
+static int threadNumber=1;
 
 int allow_squatting = 0;
 int simulation_length = 30; // default to 30 seconds
@@ -21,20 +16,21 @@ volatile int finished = 0;
 
 // Uncomment this line for debug printing
 #define DEBUG 1
+
 #ifdef DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
 #else
 #define DEBUG_PRINT(...) 
 #endif
 
-
-static void *client(void *arg)
-{
+static void *client(void *arg){
+  tid_array[threadNumber-1] = (unsigned int)pthread_self();
+  printf("\n\n\n\n\n\n\n\n\n\n\nThread number #%d in squatter stress!\n",threadNumber++);
+  
   struct random_data rd;
   char rand_state[256];
   int32_t salt = time(0);
 
-  // See http://lists.debian.org/debian-glibc/2006/01/msg00037.html
   rd.state = (int32_t*)rand_state;
 
   // Initialize the prng.  For testing, it may be helpful to reduce noise by 
@@ -42,6 +38,7 @@ static void *client(void *arg)
   initstate_r(salt, rand_state, sizeof(rand_state), &rd);
 
   while (!finished) {
+
     /* Pick a random operation, string, and ip */
     int32_t code;
     int rv = random_r(&rd, &code);
@@ -57,6 +54,7 @@ static void *client(void *arg)
 
     DEBUG_PRINT("Length is %d\n", length);
     memset(buf, 0, 64);
+
     /* Generate a random string in lowercase */
     for (j = 0; j < length; j+= 6) {
       int i;
@@ -64,35 +62,32 @@ static void *client(void *arg)
 
       rv = random_r(&rd, &chars);
       if (rv) {
-	printf("Failed to get random number - %d\n", rv);
-	return NULL;
+        printf("Failed to get random number - %d\n", rv);
+        return NULL;
       }
 
       for (i = 0; i < 6 && (i+j) < length; i++) {
-	char val = ( (chars >> (5 * i)) & 31);
-	if (val > 25)
-	  val = 25;
-	buf[j+i] = 'a' + val;
+        char val = ( (chars >> (5 * i)) & 31);
+        if (val > 25)
+          val = 25;
+        buf[j+i] = 'a' + val;
       }
     }
 
     DEBUG_PRINT ("Random string is %s\n", buf);
-    
 
     switch (code % 3) {
     case 0: // Search
       DEBUG_PRINT ("Search\n");
       search (buf, length, NULL);
-      print();
       break;
     case 1: // insert
       DEBUG_PRINT ("insert\n");
       rv = random_r(&rd, &ip4_addr);
       if (rv) {
-	printf("Failed to get random number - %d\n", rv);
-	return NULL;
+        printf("Failed to get random number - %d\n", rv);
+        return NULL;
       }
-
       insert (buf, length, ip4_addr);
       break;
     case 2: // delete
@@ -103,12 +98,13 @@ static void *client(void *arg)
       assert(0);
     }
   }
-  
+
   return NULL;
 }
 
-static void *squatter_stress(void *arg)
-{
+static void *squatter_stress(void *arg){
+  tid_array[threadNumber-1] = (unsigned int)pthread_self();
+  DEBUG_PRINT("\n\n\n\n\n\n\n\n\n\n\nThread number #%d in squatter stress!\n",threadNumber++);
   /* Just loop over 4 names, trying to create them
    * and then free them.  If all threads
    * try to create the same name, all but one should block
@@ -121,65 +117,100 @@ static void *squatter_stress(void *arg)
     insert ("abe", 3, ip);
     insert ("bce", 3, ip);
     insert ("bcc", 3, ip);
+    //insert ("zzz", 3, ip);
     delete ("abc", 3);
     delete ("abe", 3);
     delete ("bce", 3);
     delete ("bcc", 3);
+    printf("\n\n\n\n\n\nEnd of squatter loop, now printing tree in ");
+    printThreadNumber();
+    printf(":\n");
+    print();
   }
-
+  printf("Time is up.\n");
   return NULL;
 }
 
-#define die(msg) do {				\
+#define die(msg) do {		\
+  printf("\n\n");           \
   print();					\
-  printf(msg);					\
+  printf("\n\n");           \
+  printf(msg);				\
   exit(1);					\
   } while (0)
 
 int self_tests() {
   int rv;
   int32_t ip = 0;
+
+  DEBUG_PRINT("\nRUNNING SELF TESTS:\n");
+  DEBUG_PRINT("-----------------------------\n");
   
-  rv = insert ("ab", 2, 2);
-  if (!rv) die ("Failed to insert key ab\n");
+  DEBUG_PRINT("01] Adding root node: ['.com']....\n");
+  rv = insert (".com", 4, 100);
+  if (!rv) die ("Could not insert root node.\n\n");
+  DEBUG_PRINT("Succesfully inserted root node: ['.com']....\n\n");
   
-  rv = insert("bb", 2, 2);
+  DEBUG_PRINT("02] Inserting node: ['google.com']....\n");
+  rv = insert("google.com", 10, 376006);
   if (!rv) die ("Failed to insert key bb\n");
+  DEBUG_PRINT("Succesfully inserted key: ['google.com']....\n\n");
 
+  DEBUG_PRINT("03] Inserting node: ['bing.com']....\n");
+  rv = insert("bing.com", 8, 6218);
+  if (!rv) die ("Failed to insert key bb\n");
+  DEBUG_PRINT("Succesfully inserted key: ['bing.com']....\n\n");
+
+  DEBUG_PRINT("04] Printing....\n");
   print();
-  printf("So far so good\n\n");
-
-  rv = search("ab", 2, &ip);
-  printf("Rv is %d\n", rv);
-  if (!rv) die ("Failed to find key ab\n");
-  if (ip != 2) die ("Found bad IP for key ab\n");
+  DEBUG_PRINT("Successfully Printed Trie....\n\n");
   
-  rv = search("aa", 2, NULL);
-  if (rv) die ("Found bogus key aa\n");
+  DEBUG_PRINT("05] Searching for: ['google.com']....\n");
+  rv = search("google.com", 10, &ip);
+  printf("Search Result: [Return Value: %d] [IP: %d]\n", rv, ip);
+  if (!rv) die ("Failed to find key ['google.com']\n");
+  if (ip != 376006) die ("Bad IP returned for ['google.com']\n");
+  DEBUG_PRINT("Successfully found key: ['google.com']....\n\n");
+  
+  DEBUG_PRINT("06] Searching for: ['youtube.com']....\n");
+  rv = search("youtube.com", 11, NULL);
+  printf("Search Result: [Return Value: %d] [IP: %d]\n", rv, ip);
+  if (rv) die ("Found nonexistent key: ['youtube.com']\n");
+  DEBUG_PRINT("Failed to find key: ['youtube.com']....\n\n");
 
   ip = 0;
 
-  rv = search("bb", 2, &ip);
-  if (!rv) die ("Failed to find key bb\n");
-  if (ip != 2) die ("Found bad IP for key bb\n");
+  DEBUG_PRINT("07] Searching for: ['bing.com']....\n");
+  rv = search("bing.com", 8, &ip);
+  printf("Search Result: [Return Value: %d] [IP: %d]\n", rv, ip);
+  if (!rv) die ("Failed to find key ['bing.com']\n\n");
+  if (ip != 6218) die ("Found bad IP for key ['bing.com']\n");
+  DEBUG_PRINT("Successfully found key: ['bing.com']....\n\n");
 
   ip = 0;
+  DEBUG_PRINT("08] Deleting node: ['yahoo.com']....\n");
+  rv = delete("yahoo.com", 9);
+  if (rv) die ("Deleted nonexistent key ['yahoo.com']\n");
+  DEBUG_PRINT("Failed to delete key: ['yahoo.com']....\n\n");
 
-  rv = delete("cb", 2);
-  if (rv) die ("deleted bogus key cb\n");
+  DEBUG_PRINT("09] Deleting node: ['bing.com']....\n");
+  rv = delete("bing.com", 8);
+  if (!rv) die ("Failed to delete key: ['bing.com']....\n\n");
+  DEBUG_PRINT("Successfully deleted key: ['bing.com']....\n\n");
 
-  rv = delete("bb", 2);
-  if (!rv) die ("Failed to delete real key bb\n");
-
-  rv = search("ab", 2, &ip);
-  if (!rv) die ("Failed to find key ab\n");
-  if (ip != 2) die ("Found bad IP for key ab\n");
+  DEBUG_PRINT("10] Searching for: ['bing.com']....\n");
+  rv = search("bing.com", 8, &ip);
+  printf("Search Result: [Return Value: %d] [IP: %d]\n", rv, ip);
+  if (rv) die ("Found nonexistent key ab\n");
+  DEBUG_PRINT("Failed to find key: ['bing.com']....\n\n");
 
   ip = 0;
+  DEBUG_PRINT("11] Deleting node: ['google.com']....\n");
+  rv = delete("google.com", 10);
+  if (!rv) die ("Failed to delete key: ['google.com']....\n\n");
+  DEBUG_PRINT("Successfully deleted key: ['google.com']....\n\n");
 
-  rv = delete("ab", 2);
-  if (!rv) die ("Failed to delete real key ab\n");
-
+  printf("Self test succeeded!\n");
   return 0;
 }
 
@@ -199,6 +230,7 @@ int main(int argc, char ** argv) {
   int c, i, rv;
   pthread_t *tinfo;
   int stress_squatting = 0;
+
 
   // Read options from command line:
   //   # clients from command line, as well as seed file
@@ -236,9 +268,9 @@ int main(int argc, char ** argv) {
   srandom(time(0));
 
   // Run the self-tests if we are in debug mode 
-#ifdef DEBUG
-  self_tests();
-#endif
+  #ifdef DEBUG
+      self_tests();
+  #endif
 
   // Launch client threads
   tinfo = calloc(numthreads, sizeof(pthread_t));
@@ -260,27 +292,35 @@ int main(int argc, char ** argv) {
   // After the simulation is done, shut it down
   sleep (simulation_length);
   finished = 1;
-
+  //if(allow_squatting)
+  //char* const* qq="lol"; 
+  //char* const* wow[]={qq,NULL};
+ // char ** args = {"lol",NULL};
+  printf("BEFORE EXEC WTF WTF WTF WTF WTF WTF TIME IS UP TIME IS UP\n\n\n\n\n\n\n\n");
+  //execlp("echo","lol",NULL);
+  printf("AFTER EXEC WTF WTF WTF WTF WTF WTF TIME IS UP TIME IS UP\n\n\n\n\n\n\n\n");
   // Wait for all clients to exit.  If we are allowing blocking,
   // cancel the threads, since they may hang forever
   if (allow_squatting) {
       for (i = 0; i < numthreads; i++) {
-	int rv = pthread_cancel(tinfo[i]);
-	if (rv != 0)
-	  printf ("Uh oh.  pthread_cancel failed %d\n", rv);
+        int rv = pthread_cancel(tinfo[i]);
+        if (rv != 0)
+          printf ("Uh oh.  pthread_cancel failed %d\n", rv);
       }
   }
 
+  if(!allow_squatting){
   for (i = 0; i < numthreads; i++) {
     int rv = pthread_join(tinfo[i], NULL);
     if (rv != 0)
       printf ("Uh oh.  pthread_join failed %d\n", rv);
   }
-
-#ifdef DEBUG  
-  /* Print the final tree for fun */
-  print();
-#endif
+}
+  #ifdef DEBUG  
+    /* Print the final tree for fun */
+    print();
+  #endif
   
   return 0;
 }
+
