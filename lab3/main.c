@@ -15,7 +15,7 @@ int simulation_length = 30; // default to 30 seconds
 volatile int finished = 0;
 
 // Uncomment this line for debug printing
-#define DEBUG 1
+//#define DEBUG 1
 
 #ifdef DEBUG
 #define DEBUG_PRINT(...) printf(__VA_ARGS__)
