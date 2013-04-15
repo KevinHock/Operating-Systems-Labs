@@ -50,6 +50,7 @@ void printThreadNumber(){
     if(tid_array[i]==(unsigned int)pthread_self()){
       printf("Thread #%d ",(i+1));
     }
+    //printf("is %u equal to %u", tid_array[i], (unsigned int)pthread_self());
   }
 }
 
@@ -65,7 +66,7 @@ void unlockForPTN(){
 
 
 
-
+//Make a new leaf (like if root is null)
 struct trie_node * new_leaf (const char *string, size_t strlen, int32_t ip4_address) {
   struct trie_node *new_node = malloc(sizeof(struct trie_node));
   if (!new_node) {
@@ -97,7 +98,7 @@ int compare_keys (const char *string1, int len1, const char *string2, int len2, 
 
 void init(int numthreads) {
   if (numthreads != 1)
-    printf("WARNING: This Trie is only safe to use with one thread!!!  You have %d!!!\n", numthreads);
+    printf("You have %d threads.\n", numthreads);
 
   root = NULL;
 }
@@ -254,41 +255,41 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address,
       assert ((!parent) || (!left));
 
       if (node == root) {
-	new_node->next = node->next;
-	node->next = NULL;
-	root = new_node;
+        new_node->next = node->next;
+        node->next = NULL;
+        root = new_node;
       } else if (parent) {
-	assert(parent->children == node);
-	new_node->next = NULL;
-	parent->children = new_node;
+        assert(parent->children == node);
+        new_node->next = NULL;
+        parent->children = new_node;
       } else if (left) {
-	new_node->next = node->next;
-	node->next = NULL;
-	left->next = new_node;
+        new_node->next = node->next;
+        node->next = NULL;
+        left->next = new_node;
       } else if ((!parent) && (!left)) {
-	root = new_node;
+        root = new_node;
       }
 
       return _insert(string, i, ip4_address,
 		     node, new_node, NULL);
     } else if (cmp < 0) {
       if (node->next == NULL) {
-	// Insert here
-	struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
-	node->next = new_node;
-	return 1;
+        // Insert here
+        struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
+        node->next = new_node;
+        return 1;
       } else {
-	// No, recur right (the node's key is "greater" than  the search key)
-	return _insert(string, strlen, ip4_address, node->next, NULL, node);
+        // No, recur right (the node's key is "greater" than  the search key)
+        return _insert(string, strlen, ip4_address, node->next, NULL, node);
       }
     } else {
       // Insert here
       struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
       new_node->next = node;
       if (node == root)
-	root = new_node;
+        root = new_node;
       else if (parent && parent->children == node)
-	parent->children = new_node;
+        parent->children = new_node;
     }
     return 1;
   }
@@ -319,10 +320,6 @@ int insert (const char *string, size_t strlen, int32_t ip4_address){
     ATOMIC_PRINT("Unlocked.\n");
     return 1;
   }
-  
-  
-  
-  
   
   //Implement squatting
   int32_t *pass=&ip4_address; 
@@ -357,29 +354,6 @@ int insert (const char *string, size_t strlen, int32_t ip4_address){
     }
   }
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
   if(everWaited){
     ATOMIC_PRINT("Just got woken up and now trying to insert string \"%s\" of length %u\n\n\n\n\n\n\n", string, strlen);
     
@@ -406,6 +380,7 @@ int insert (const char *string, size_t strlen, int32_t ip4_address){
   return result;
 }
 
+//Just for debugging purposes. Dead code as far as your concerned
 void _printMyOwn (struct trie_node *node) {
   printf ("Node at %p.  Key %.*s, IP %d.  Next %p, Children %p\n", 
 	  node, node->strlen, node->key, node->ip4_address, node->next, node->children);
@@ -432,10 +407,10 @@ int searchNoLock(const char *string, size_t strlen, int32_t *ip4_address){
   
   foundNode=(found != NULL);     
   
-  ATOMIC_PRINT("In searchNoLock returning %d because the string is %s of length %u\n", foundNode, string, strlen);
-  ATOMIC_PRINT("--------------------------------------------------------------------------------\n");
-  _printMyOwn(root);
-  ATOMIC_PRINT("--------------------------------------------------------------------------------\n");
+  //ATOMIC_PRINT("In searchNoLock returning %d because the string is %s of length %u\n", foundNode, string, strlen);
+  //ATOMIC_PRINT("--------------------------------------------------------------------------------\n");
+  //_printMyOwn(root);
+  //ATOMIC_PRINT("--------------------------------------------------------------------------------\n");
   return foundNode;
 }
 
@@ -531,7 +506,7 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
 int delete(const char *string, size_t strlen) {
   int err;
   
-  ATOMIC_PRINT("DELETE attempting to get lock\n");
+  ATOMIC_PRINT("DELETE attempting to get lock to delete %s of length %u\n", string, strlen);
   err = pthread_rwlock_wrlock(&rwlock);
   assert(!err);
   ATOMIC_PRINT("Locked delete.\n");

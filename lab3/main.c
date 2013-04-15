@@ -25,7 +25,7 @@ volatile int finished = 0;
 
 static void *client(void *arg){
   tid_array[threadNumber-1] = (unsigned int)pthread_self();
-  printf("\n\n\n\n\n\n\n\n\n\n\nThread number #%d in squatter stress!\n",threadNumber++);
+  printf("Thread #%d in squatter stress!\n",threadNumber++);
   
   struct random_data rd;
   char rand_state[256];
@@ -104,7 +104,8 @@ static void *client(void *arg){
 
 static void *squatter_stress(void *arg){
   tid_array[threadNumber-1] = (unsigned int)pthread_self();
-  DEBUG_PRINT("\n\n\n\n\n\n\n\n\n\n\nThread number #%d in squatter stress!\n",threadNumber++);
+  printf("Thread #%d in squatter stress!\n",threadNumber++);
+  
   /* Just loop over 4 names, trying to create them
    * and then free them.  If all threads
    * try to create the same name, all but one should block
@@ -127,6 +128,7 @@ static void *squatter_stress(void *arg){
     printf(":\n");
     print();
   }
+  
   printf("Time is up.\n");
   return NULL;
 }
@@ -296,9 +298,8 @@ int main(int argc, char ** argv) {
   //char* const* qq="lol"; 
   //char* const* wow[]={qq,NULL};
  // char ** args = {"lol",NULL};
-  printf("BEFORE EXEC WTF WTF WTF WTF WTF WTF TIME IS UP TIME IS UP\n\n\n\n\n\n\n\n");
   //execlp("echo","lol",NULL);
-  printf("AFTER EXEC WTF WTF WTF WTF WTF WTF TIME IS UP TIME IS UP\n\n\n\n\n\n\n\n");
+  printf("Times up, have a great day.\n");
   // Wait for all clients to exit.  If we are allowing blocking,
   // cancel the threads, since they may hang forever
   if (allow_squatting) {

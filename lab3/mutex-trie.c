@@ -62,15 +62,6 @@ void unlockForPTN(){
   pthread_mutex_unlock(&mutexForPTN);
 }
 
-
-
-
-
-
-
-
-
-
 struct trie_node *new_leaf(const char *string, size_t strlen, int32_t ip4_address) {
   struct trie_node *new_node = malloc(sizeof(struct trie_node));
   if (!new_node) {
@@ -89,8 +80,6 @@ struct trie_node *new_leaf(const char *string, size_t strlen, int32_t ip4_addres
   return new_node;
 }
 
-
-
 int compare_keys (const char *string1, int len1, const char *string2, int len2, int *pKeylen) {
     int keylen, offset1, offset2;
     keylen = len1 < len2 ? len1 : len2;
@@ -102,14 +91,10 @@ int compare_keys (const char *string1, int len1, const char *string2, int len2, 
     return strncmp(&string1[offset1], &string2[offset2], keylen);
 }
 
-
-
 void init(int numthreads) {
   printf("You have %d threads.\n",numthreads);
   root = NULL;
 }
-
-
 
 /* Recursive helper function.
  * Returns a pointer to the node if found.
@@ -167,7 +152,6 @@ int search(const char *string, size_t strlen, int32_t *ip4_address) {
     return 0;
   }
   
-  
   //ATOMIC_PRINT("Searching for \"%s\" of length %u\n", string, strlen);
   found = _search(root, string, strlen);
  
@@ -180,8 +164,6 @@ int search(const char *string, size_t strlen, int32_t *ip4_address) {
   //ATOMIC_PRINT("Done with search\n"); 
   return foundNode;
 }
-
-
 
 /* Recursive helper function */
 int _insert (const char *string, size_t strlen, int32_t ip4_address, struct trie_node *node, struct trie_node *parent, struct trie_node *left) {
@@ -211,33 +193,33 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address, struct trie
       assert ((!parent) || (!left));
 
       if (parent) {
-	parent->children = new_node;
+        parent->children = new_node;
       } else if (left) {
-	left->next = new_node;
+        left->next = new_node;
       } else if ((!parent) || (!left)) {
-	root = new_node;
+        root = new_node;
       }
       return 1;
 
     } else if (strlen > keylen) {
       
       if (node->children == NULL) {
-	// Insert leaf here
-	struct trie_node *new_node = new_leaf (string, strlen - keylen, ip4_address);
-	node->children = new_node;
-	return 1;
+        // Insert leaf here
+        struct trie_node *new_node = new_leaf (string, strlen - keylen, ip4_address);
+        node->children = new_node;
+        return 1;
       } else {
-	// Recur on children list, store "parent" (loosely defined)
-      return _insert(string, strlen - keylen, ip4_address,
-		     node->children, node, NULL);
+        // Recur on children list, store "parent" (loosely defined)
+        return _insert(string, strlen - keylen, ip4_address,
+           node->children, node, NULL);
       }
     } else {
       assert (strlen == keylen);
       if (node->ip4_address == 0) {
-	node->ip4_address = ip4_address;
-	return 1;
+        node->ip4_address = ip4_address;
+        return 1;
       } else {
-	return 0;
+        return 0;
       }
     }
 
@@ -249,8 +231,8 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address, struct trie
 			   &string[i], strlen - i, &keylen2);
       assert (keylen2 > 0);
       if (cmp2 == 0) {
-	overlap = 1;
-	break;
+        overlap = 1;
+        break;
       }
     }
 
@@ -264,41 +246,41 @@ int _insert (const char *string, size_t strlen, int32_t ip4_address, struct trie
       assert ((!parent) || (!left));
 
       if (node == root) {
-	new_node->next = node->next;
-	node->next = NULL;
-	root = new_node;
+        new_node->next = node->next;
+        node->next = NULL;
+        root = new_node;
       } else if (parent) {
-	assert(parent->children == node);
-	new_node->next = NULL;
-	parent->children = new_node;
+        assert(parent->children == node);
+        new_node->next = NULL;
+        parent->children = new_node;
       } else if (left) {
-	new_node->next = node->next;
-	node->next = NULL;
-	left->next = new_node;
+        new_node->next = node->next;
+        node->next = NULL;
+        left->next = new_node;
       } else if ((!parent) && (!left)) {
-	root = new_node;
+        root = new_node;
       }
 
       return _insert(string, i, ip4_address,
 		     node, new_node, NULL);
     } else if (cmp < 0) {
       if (node->next == NULL) {
-	// Insert here
-	struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
-	node->next = new_node;
-	return 1;
+        // Insert here
+        struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
+        node->next = new_node;
+        return 1;
       } else {
-	// No, recur right (the node's key is "greater" than  the search key)
-	return _insert(string, strlen, ip4_address, node->next, NULL, node);
+        // No, recur right (the node's key is "greater" than  the search key)
+        return _insert(string, strlen, ip4_address, node->next, NULL, node);
       }
     } else {
-      // Insert here
-      struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
-      new_node->next = node;
-      if (node == root)
-	root = new_node;
-      else if (parent && parent->children == node)
-	parent->children = new_node;
+        // Insert here
+        struct trie_node *new_node = new_leaf (string, strlen, ip4_address);
+        new_node->next = node;
+        if (node == root)
+          root = new_node;
+        else if (parent && parent->children == node)
+          parent->children = new_node;
     }
     return 1;
   }
@@ -589,7 +571,7 @@ int delete(const char *string, size_t strlen) {
     // Since we deleted something then we can notify all threads waiting 
     rvOBroadcast = pthread_cond_broadcast(&cond);
     if(rvOBroadcast!=0){
-      ATOMIC_PRINT("\n\n\n\n\n\n\n\n\n\n\n\n\nGODOGOD pthread_cond_broadcast ERROR\n\n\n\n\n\n\n\n\n\n"); 
+      ATOMIC_PRINT("GODOGOD pthread_cond_broadcast ERROR\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"); 
     }
     ATOMIC_PRINT("Deleted %s  successful BROADCASTING.\n",string);
   }else{

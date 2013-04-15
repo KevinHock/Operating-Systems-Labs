@@ -1,6 +1,5 @@
 /* CSE 306: Sea Wolves Interactive SHell 
- * TODO: Custom FD "printenv --gdfgd 2<errlog"
- * TODO: Add a few if this is negative something failed'z
+ * TODO: Add a few if this is negative something failed'
  * TODO: Pipes "printenv --gdfgd 2|grep '.txt'>letsee"
  */
 
