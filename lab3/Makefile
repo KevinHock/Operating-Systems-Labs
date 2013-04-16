@@ -1,4 +1,4 @@
-all: dns-mutex dns-rw
+all: dns-mutex dns-rw dns-fine
 
 CFLAGS = -g -ggdb -Wall -Werror -pthread
 
