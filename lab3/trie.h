@@ -29,7 +29,7 @@ void print ();
  */
 extern int allow_squatting;
 
-unsigned int tid_array[20];
+unsigned int tid_array[200000];
 
 //Print thread number
 void printThreadNumber();

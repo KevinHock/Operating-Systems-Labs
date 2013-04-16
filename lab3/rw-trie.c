@@ -6,7 +6,7 @@
 #include <sys/types.h>
 #include "trie.h"
 
-extern unsigned int tid_array[20];
+extern unsigned int tid_array[200000];
 
 typedef int bool;
 #define TRUE 1

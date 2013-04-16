@@ -1,5 +1,9 @@
 I made an awesome ATOMIC PRINT macro to print the Thread # the Line # and whatever I wanted to print atomically
 
+You can comment that out if you need to it's at the beginning of rw-trie and mutex-trie.
+
+ATOMIC PRINT MIGHT NOT WORK FOR OVER 20 THREADS THOUGH THE PROGRAM STILL WORKS
+
 IMPORTANT vvvvvvvvv
 To confirm that my program is in fact hanging because all threads are waiting you can do the following:
 
