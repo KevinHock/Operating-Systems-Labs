@@ -16,6 +16,7 @@ typedef int bool;
 #define UPTN unlockForPTN();
 #define LPTN lockForPTN();
 
+//Comment out here       //  if you don't want to see the atomic print
 #define ATOMIC_PRINT(...) LPTN PTN printf("Line #%d ",__LINE__); printf(__VA_ARGS__); UPTN
 
 #define LINES 1
