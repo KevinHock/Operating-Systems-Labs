@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include "trie.h"
 
+void clear_locks();
+
 /*********************************************************************\
  * struct trie_node                                                   *
  *====================================================================*
@@ -29,6 +31,7 @@ struct trie_node {
   struct trie_node *children;     /* Sorted list of children */
   char key[64];                   /* Up to 64 chars          */
   pthread_mutex_t mutex;          /* A lock for the node     */
+  int num_squatters;              /* The number of squatters */
 }; 
 
 
@@ -312,11 +315,13 @@ int search(const char *string, size_t strlen, int32_t *ip4_address){
 
     // Search for our search term starting at the root:
     found = _search(root, string, strlen);
-    printf("[Thread: %lu] SEARCH LOCK COUNT: [Locked: %d | Unlocked: %d]\n", pthread_self(), searchlocked, searchunlocked);
 
     // If we found our search term, get the IP address from the node:
     if (found && ip4_address)
       *ip4_address = found->ip4_address;
+
+    // This is unneeded, but doesn't hurt to make sure all locks are gone after our operation:
+    clear_locks();
 
     // Return the result of our findings:
     return (found != NULL);
@@ -470,7 +475,7 @@ int _insert(const char *string, size_t strlen, int32_t ip4_address,
       } else {
 
         // TODO: Handle Squatting:
-//        printf("Squatting!!!!!!\n");
+        node->num_squatters++;
 
         // Finished inserting, unlock the current node:
         pthread_mutex_unlock(&(node->mutex));
@@ -695,7 +700,9 @@ int insert (const char *string, size_t strlen, int32_t ip4_address) {
 
   // Insert the new node:
   result = _insert (string, strlen, ip4_address, root, NULL, NULL);
-  printf("[Thread: %lu] INSERT LOCK COUNT: [Locked: %d | Unlocked: %d]\n", pthread_self(), insertlocked, insertunlocked);
+
+  // This is unneeded, but doesn't hurt to make sure all locks are gone after our operation:
+  clear_locks();
 
   return result;
 }
@@ -752,10 +759,10 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
     } else if (strlen > keylen) {
 
       if(node->children){
-        // Unlock the node and prepare to return:
+        // Lock the child node and prepare to go deeper:
         pthread_mutex_lock(&(node->children->mutex));
         deletelocked++;
-      }  
+      }
 
       // Attempt to delete the node starting from the child of this node:
       struct trie_node *found =  _delete(node->children, string, strlen - keylen);
@@ -763,14 +770,14 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
       // If the node was found below this level:
       if (found){
 
-        // If the found node has no children:
-        if (found->children == NULL && found->ip4_address == 0) {
+        // If the found node has no children and has no IP address:
+        if (found->children == NULL && found->ip4_address == 0){
           assert(node->children == found);
 
           // Set this node's child to the next in line from the found node:
           node->children = found->next;
 
-          // Unlock the node and prepare to return:
+          // Unlock the node and prepare to free it:
           pthread_mutex_unlock(&(found->mutex));
           deleteunlocked++;
 
@@ -778,14 +785,14 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
           free(found);
         }
 
-        // If the node is the root, has no children, and has no IP address:
+        // If the current node is the root, has no children, and has no IP address:
         if (node == root && node->children == NULL && node->ip4_address == 0) {
 
           // Set the root node to it's neighbor:
           root = node->next;
 
           // Unlock the node and prepare to return:
-          pthread_mutex_unlock(&(found->mutex));
+          pthread_mutex_unlock(&(node->mutex));
           deleteunlocked++;
 
           // Free this node:
@@ -814,13 +821,17 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
       if (node->ip4_address){
      
         // Erase the IP address of the node:
-       node->ip4_address = 0;
+        node->ip4_address = 0;
 
         // If the node is the root with no children:
         if (node == root && node->children == NULL && node->ip4_address == 0) {
       
           // Set the root to the next on the level:
           root = node->next;
+      
+          // Unlock the node and prepare to return:
+          pthread_mutex_unlock(&(node->mutex));
+          deleteunlocked++;
 
           // Free the current node from memory:
           free(node);
@@ -865,6 +876,10 @@ struct trie_node *_delete (struct trie_node *node, const char *string, size_t st
 
         // Set this node's next to the found node's next:
         node->next = found->next;
+
+        // Unlock the node and prepare to return:
+        pthread_mutex_unlock(&(found->mutex));
+        deleteunlocked++;
 
         // Free the found node:
         free(found);
@@ -916,6 +931,8 @@ int delete (const char *string, size_t strlen){
   // Skip strings of length 0
   if (strlen == 0) return 0;
 
+  //return 0;
+
   // If the root is not NULL:
   if(root){
 
@@ -924,7 +941,9 @@ int delete (const char *string, size_t strlen){
 
     // Attempt to delete the Node given:
     int result = (NULL != _delete(root, string, strlen));
-    printf("[Thread: %lu] DELETE LOCK COUNT: [Locked: %d | Unlocked: %d]\n", pthread_self(), deletelocked, deleteunlocked);
+
+    // This is unneeded, but doesn't hurt to make sure all locks are gone after our operation:
+    clear_locks();
 
     // Return the result of our attempt:
     return result;
@@ -939,8 +958,9 @@ void _print (struct trie_node *node) {
   printf ("Node at %p.  Key %.*s, IP %d.  Next %p, Children %p\n", 
     node, node->strlen, node->key, node->ip4_address, node->next, node->children);
 
-  if (node->children)
+  if (node->children){
     _print(node->children);
+  }
 
   if (node->next)
     _print(node->next);
@@ -952,4 +972,24 @@ void print() {
   /* Do a simple depth-first search */
   if (root)
     _print(root);
+}
+
+
+void _clear_locks(struct trie_node *node){
+  pthread_mutex_trylock(&(node->mutex));
+  pthread_mutex_unlock(&(node->mutex));
+
+  if (node->children){
+    _clear_locks(node->children);
+  }
+
+  if (node->next)
+    _clear_locks(node->next);
+}
+
+
+
+void clear_locks() {
+  if (root)
+    _clear_locks(root);
 }

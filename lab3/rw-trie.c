@@ -47,7 +47,7 @@ static pthread_cond_t  condForSquatting  = PTHREAD_COND_INITIALIZER;
 void printThreadNumber(){
   //Loop through tid_array and when it matches print what number thread it is.
   int i=0;
-  for(;i<20;i++){
+  for(;i<200000;i++){
     if(tid_array[i]==(unsigned int)pthread_self()){
       printf("Thread #%d ",(i+1));
     }
