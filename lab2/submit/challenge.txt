@@ -1,4 +1,0 @@
-backspace key
-up and down shows it on the same line
-TIMER
-Append with redirection like "ls >> file"

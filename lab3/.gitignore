@@ -1,5 +1,0 @@
-dns-sequential
-dns-fine
-dns-rw
-dns-mutex
-*.o

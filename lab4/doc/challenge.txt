@@ -1,0 +1,7 @@
+rmmod doesn't work
+
+We demonstrated advanced string obfuscation techniques to hide the the string "APT1" from the strings utility. We could have hid more strings but it was more of a demonstration.
+
+We demonstrated advanced anti-debugging techniques using get jiffies to be able to tell if someone is debugging the module. We could have made things more destructive but decided not to.
+
+Making Adam P. do anything.

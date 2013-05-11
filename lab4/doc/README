@@ -1,0 +1,25 @@
+Describe how you implemented the main programming assignment. The README
+file should describe what you did, what approach you took, results of any
+measurements you made, which files are included in your submission and what
+they are for, etc.  Feel free to include any other information you think is
+helpful to us in this README; it can only help your grade.
+
+
+sshd port hiding:
+	started with the proc_dir_entry and iterated through the folders
+	untill I found a folder called tcp or tcp6.
+	then I rewrote tcp6_seq_show and tcp4_seq_show
+	functions.
+
+hiding directory/files:
+	Obtained the address of the syscall table. Set it read/write using the offsets from a linux header file
+	we stored the pointer to the original function and replaced it with a custom functions. The syscall table was then set back to 		read only. The functions hooked for this task were getdents and getdents64. We called the original getdents/getdents64 and 		then modified the return results before exiting the function. When a module is unloaded the syscall table is set to read/write 		and the orignal functions are set back in the syscall table. The table is then marked read only again and this part is done.
+
+hiding rootkit from lsmod:
+	i created a proc file called apt1 to get a pointer and from there just traversed pionters until i got 
+	proc/modules then edited out the line with the rootkit in it in the .read fuction. overall it was 
+	pretty easy once i knew the structs well.
+
+hiding sshd from ps:
+	Copied everything from hiding directory/file and added if statement to check for the processid that was passed into the program
+	from the shellscript.
