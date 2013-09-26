@@ -1,3 +1,5 @@
+Each folder has it's own README but,
+
 LAB 1
 Text file utility issuing system calls via inline x86.
 
