@@ -1,3 +1,5 @@
+LAB 1
+
 Complete the fileutil program, as described below. Do not use libc, but rather, expand the use of your own system call macros, implemented in mysyscall.h. 
 The program should build on the course VMs, using the 'make' command. The program should take arguments as follows:
 
@@ -30,3 +32,4 @@ The program should check for EVERY POSSIBLE ERROR that could occur BEFORE openin
 Many of the possible errors are listed on the analogous libc manual page. For instance, you might look at man 2 open to learn all possible return values (however, the error will be a directly returned as a negative value, not placed in errno). 
 
 You are welcome to include the definitions in standard header files, but you may not link against libc, or include .c files from the libc source. 
+
