@@ -1,18 +1,9 @@
-I made an awesome ATOMIC PRINT macro to print the Thread # the Line # and whatever I wanted to print atomically
+This lab was a simulation of how DNS works using a reverse trie. Me and my lab partner did not make the trie.
 
-You can comment that out if you need to it's at the beginning of rw-trie and mutex-trie.
+Implemented a thread-safe trie in mutex-trie.c, using coarse-grained locking.
 
-ATOMIC PRINT MIGHT NOT WORK FOR OVER 200000 THREADS THOUGH THE PROGRAM STILL WORKS
+Implemented a trie which allows concurrent readers, but mutually excludes writers in rw-trie.c, using coarse-grained locking.
 
-IMPORTANT vvvvvvvvv
-To confirm that my program is in fact hanging because all threads are waiting you can do the following:
+Added squatting support to each of the tries you have implemented so far. 
 
-cse306@vl109:~/CSE306/Group/lab3/latest$ ./dns-rw -q -l 100 -c 4 > garymcgraw.txt
-cse306@vl109:~/CSE306/Group/lab3/latest$ ^C
-cse306@vl109:~/CSE306/Group/lab3/latest$ cat garymcgraw.txt | grep "waiting"
-Thread #2 Line #341 1-th time waiting	String is cyrzj
-Thread #4 Line #341 2-th time waiting	String is zzpdzfroz
-Thread #3 Line #341 3-th time waiting	String is a
-Thread #1 Line #341 4-th time waiting	String is z
-
-IMPORTANT ^^^^^^^^^
+Attempted to implement a trie that uses fine-grained locking in fine-trie.c. 
