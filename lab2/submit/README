@@ -1,3 +1,1 @@
-We focused on user friendliness rather than functionality. We unfortunatly did not get piping work. Features etc.
-
-
+Implemented command parsing, changing the directory, debugging messages, variable support, redirection on arbitrary handles (no pipes though), history tracking and a signature wolfie command.
