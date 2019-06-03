@@ -13,5 +13,7 @@ LAB 4 (in other branch)
 Linux kernel-mode rootkit.
 
 # These are not real secrets
+
 SUPER_SECRET = 'bLwhhBqKqDfUypeXgzDeokMXdxjb'
+
 A_PASSWORD = 'CXbwXy9gk/qivqR[p2u&f'
