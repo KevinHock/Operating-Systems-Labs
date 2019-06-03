@@ -12,6 +12,8 @@ Multithreaded DNS simulator.
 LAB 4 (in other branch)
 Linux kernel-mode rootkit.
 
+foo
+
 # These are not real secrets
 
 SUPER_DUPER_SECRET = 'bLwhhBqKqDfUypeXgzDeokMXdxjbE'
