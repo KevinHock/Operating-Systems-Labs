@@ -14,6 +14,6 @@ Linux kernel-mode rootkit.
 
 # These are not real secrets
 
-SUPER_SECRET = 'bLwhhBqKqDfUypeXgzDeokMXdxjb'
+SUPER_DUPER_SECRET = 'bLwhhBqKqDfUypeXgzDeokMXdxjbE'
 
-A_PASSWORD = 'CXbwXy9gk/qivqR[p2u&f'
+A_FAKE_PASSWORD = 'CXbwXy9gk/qivqR[p2u&fI'
