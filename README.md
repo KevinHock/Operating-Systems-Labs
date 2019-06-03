@@ -12,7 +12,7 @@ Multithreaded DNS simulator.
 LAB 4 (in other branch)
 Linux kernel-mode rootkit.
 
-foo
+gonnadothisonanotherbranch
 
 # These are not real secrets
 
